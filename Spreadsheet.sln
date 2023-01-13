@@ -5,6 +5,13 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluator", "FormulaEvaluator\FormulaEvaluator.csproj", "{53CBEC7A-0909-4270-B430-931E95A3AEFF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{92424E34-C4F0-49CF-B369-AC2DBC94C854}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{A5ADD6B0-A978-401F-A102-6586C980D25B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,10 @@ Global
 		{53CBEC7A-0909-4270-B430-931E95A3AEFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53CBEC7A-0909-4270-B430-931E95A3AEFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53CBEC7A-0909-4270-B430-931E95A3AEFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5ADD6B0-A978-401F-A102-6586C980D25B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5ADD6B0-A978-401F-A102-6586C980D25B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5ADD6B0-A978-401F-A102-6586C980D25B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5ADD6B0-A978-401F-A102-6586C980D25B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
