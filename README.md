@@ -24,7 +24,7 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 # Time Expenditures:
 	(Future assignments' predicted time tbd)
 
-	1. Assignment One:	 Predicted Hours:	5		Actual Hours:	2.25
+	1. Assignment One:	 Predicted Hours:	5		Actual Hours:	2.5
 	2. Assignment Two:	 Predicted Hours:			Actual Hours:	
 	3. Assignment Three: Predicted Hours:			Actual Hours:	
 	4. Assignment Four:	 Predicted Hours:			Actual Hours:	

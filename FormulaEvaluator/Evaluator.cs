@@ -1,17 +1,22 @@
 ﻿using System.Text.RegularExpressions;
 
+/// <summary>
+/// Author: Matthew Williams
+/// Date: 12-Jan-2023
+/// Course: 3500 - Software Practice - University of Utah
+/// 
+/// I, Matthew Williams, certify that I wrote this code myself and did not steal ideas or
+/// copy the work of another.
+/// 
+/// This Library provides the Evaluator that takes in a string representation of a formula
+/// and returns the answer to that formula.
+/// </summary>
+
 namespace FormulaEvaluator
 {
     /// <summary>
-    /// Author: Matthew Williams
-    /// Date: 12-Jan-2023
-    /// Course: 3500 - Software Practice - University of Utah
-    /// 
-    /// I, Matthew Williams, certify that I wrote this code myself and did not steal ideas or
-    /// copy the work of another.
-    /// 
-    /// This Library provides the Evlauator that takes in a string representation of a formula
-    /// and returns the answer to that formula.
+    /// Contains the static method Evaluate() that looks through the given math expression, and
+    /// returns the result of the operations.
     /// </summary>
     public class Evaluator
     {
@@ -23,11 +28,11 @@ namespace FormulaEvaluator
         public delegate int Lookup(String variable_name);
 
         /// <summary>
-        /// Reads and interprets mathmatical expressions and returns the answer to that formula.
+        /// Reads and interprets mathematical expressions and returns the answer to that formula.
         /// When an error occurs in the math or in the interpretation of the expression, an
         /// ArgumentException is thrown.
         /// </summary>
-        /// <param name="expression">The mathmatical expression to be evaluated</param>
+        /// <param name="expression">The mathematical expression to be evaluated</param>
         /// <param name="variableEvaluator">A Lookup containing the variables used in the formula</param>
         /// <returns>The result of the expression's math</returns>
         public static int Evaluate( String expression, Lookup variableEvaluator )
@@ -97,25 +102,27 @@ namespace FormulaEvaluator
                     //Push it to the stack
                     opStack.Push(trimmed);
 
-                //If the token is an opening parenthases
+                //If the token is an opening parentheses
                 } else if (trimmed == "(") {
                     //Push it to the stack
                     opStack.Push(trimmed);
 
-                //If the token is a closing parenthases
+                //If the token is a closing parentheses
                 } else if (trimmed == ")") {
 
-                    //Stage 1: Deal with any + or - operations in the parenthases
+                    //Stage 1: Deal with any + or - operations in the parentheses
                     if (opStack.Count > 0 && (opStack.Peek() == "+" || opStack.Peek() == "-")) DoOperationFromStack();
 
                     //Stage 2: Expected '(' removal
-                    if (opStack.Pop() != "(") throw new ArgumentException("Improper Parenthases!");
+                    if (opStack.Pop() != "(") throw new ArgumentException("Improper Parentheses!");
 
-                    //Stage 3: Apply any * or / that point to this parenthases group
+                    //Stage 3: Apply any * or / that point to this parentheses group
                     if (opStack.Count > 0 && (opStack.Peek() == "*" || opStack.Peek() == "/")) DoOperationFromStack();
 
                 //If the token is a variable
                 } else {
+                    //Double check the variable is valid
+                    if (!IsValidVariableName(trimmed)) throw new ArgumentException($"Invalid Token ( {trimmed} )!");
                     //Look up the value of the variable, then treat it just like an Integer
                     ApplyInt(variableEvaluator(t));
                 }
@@ -143,7 +150,7 @@ namespace FormulaEvaluator
         /// <param name="val2">The second value in the operation</param>
         /// <returns>The result of the operation</returns>
         /// <exception cref="ArgumentException">Divide by Zero, and Invalid Operator</exception>
-        public static int ApplyOperation(int val1, string op, int val2) {
+        static int ApplyOperation(int val1, string op, int val2) {
             //Check that there is no Divide by Zero problem
             if (op == "/" && val2 == 0) throw new ArgumentException("Cannot Divide by Zero!");
 
@@ -154,8 +161,22 @@ namespace FormulaEvaluator
                 "/" => val1 / val2,
                 "+" => val1 + val2,
                 "-" => val1 - val2,
-                _ => throw new ArgumentException("Operator Not Recognized! (" + op + ")")
+                _ => throw new ArgumentException("Operator Not Recognized! ( " + op + " )")
             };
+        }
+
+        /// <summary>
+        /// Returns whether or not a variable name is of the correct form (1+ letters followed by 1+ numbers)
+        /// </summary>
+        /// <param name="name">The name of the variable</param>
+        /// <returns>True or False.</returns>
+        static bool IsValidVariableName(string name) {
+            if (Regex.Match(name, @"[^a-zA-Z0-9]").Success) return false;       //Fail if name contains anything other than letters and numbers
+            if (Regex.Match(name, @"[0-9](?=[a-zA-Z])").Success) return false;  //Fail if name contains a number followed by a letter
+            if (!Regex.Match(name, @"[a-zA-Z]").Success) return false;      //Fail if name doesn't contain a letter
+            if (!Regex.Match(name, @"[0-9]").Success) return false;         //Fail if name doesn't contain a number
+            //Return true if nothing has failed by now
+            return true;
         }
     }
 }

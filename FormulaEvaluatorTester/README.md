@@ -12,9 +12,8 @@ Copyright:		CS 3500 and Matthew Williams - This work may not be copied for use i
 
 # Comments to Evaluators
 
-	Since we are not yet using unit tests, I just wrote a short helper method that prints out the
-	expression being tested, the expected result, and the answer received.  Comments on each line
-	describe briefly what I was testing for, or the purpose of that particular test.
+	Since we are not yet using unit tests, I just wrote a short helper method that prints out any
+	errors run into during the test.
 
 
 # Assignment Specific Topics
@@ -23,11 +22,13 @@ Copyright:		CS 3500 and Matthew Williams - This work may not be copied for use i
 
 # Consulted Peers
 	
-	No Peers Consulted - I spoke with others in the class, just not about / for help on this assignment.
+	No Peers Consulted - I spoke with others in the class, just not about/for help on this assignment.
 
 # References
 	
 	StackOverflow - Help getting my Tester project to run rather than my Library project (I'm new to VS)
 		URL: https://stackoverflow.com/questions/3850019/running-two-projects-at-once-in-visual-studio
-	Microsoft C# Docs = C# Syntax help (I'm also new to C#)
+	Microsoft C# Docs - Regex Help for verifying Variable Names (See Evaluator.cs's IsValidVariableName helper method)
+		URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
+	Microsoft C# Docs - C# Syntax help (I'm also new to C#)
 		URL: (Multiple Pages Used)
