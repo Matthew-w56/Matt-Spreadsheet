@@ -3,14 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluator", "FormulaEvaluator\FormulaEvaluator.csproj", "{53CBEC7A-0909-4270-B430-931E95A3AEFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluator", "FormulaEvaluator\FormulaEvaluator.csproj", "{53CBEC7A-0909-4270-B430-931E95A3AEFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{92424E34-C4F0-49CF-B369-AC2DBC94C854}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{A5ADD6B0-A978-401F-A102-6586C980D25B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{A5ADD6B0-A978-401F-A102-6586C980D25B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spreadsheet", "Spreadsheet", "{2202CE29-7EC6-4DBB-98E5-1E330D2D23EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53CBEC7A-0909-4270-B430-931E95A3AEFF} = {2202CE29-7EC6-4DBB-98E5-1E330D2D23EC}
+		{92424E34-C4F0-49CF-B369-AC2DBC94C854} = {2202CE29-7EC6-4DBB-98E5-1E330D2D23EC}
+		{A5ADD6B0-A978-401F-A102-6586C980D25B} = {2202CE29-7EC6-4DBB-98E5-1E330D2D23EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ECEC859-DED7-4E45-94B3-70ED1B07F409}
