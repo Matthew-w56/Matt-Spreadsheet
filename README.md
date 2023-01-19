@@ -18,13 +18,13 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 
 	2. Future Functionality
 		Eventually, the Solution will be a full, working Spreadsheet program that allows the user to use
-		mathematical formulas between cells, input information, and safe and retreive their files.
+		mathematical formulas between cells, input information, and safe and retrieve their files.
 
 
 # Time Expenditures:
 	(Future assignments' predicted time tbd)
 
 	1. Assignment One:	 Predicted Hours:	5		Actual Hours:	2.5
-	2. Assignment Two:	 Predicted Hours:			Actual Hours:	
+	2. Assignment Two:	 Predicted Hours:	4		Actual Hours:	
 	3. Assignment Three: Predicted Hours:			Actual Hours:	
 	4. Assignment Four:	 Predicted Hours:			Actual Hours:	
