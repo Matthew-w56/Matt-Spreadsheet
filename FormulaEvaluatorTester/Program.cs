@@ -10,7 +10,7 @@ using System.Diagnostics;
 /// </summary>
 /// <sumarry>
 /// Placeholder for the working delegate that will be produced later
-/// </sumarry>
+/// </summary>
 
 
 
