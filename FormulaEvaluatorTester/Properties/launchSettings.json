@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "FormulaEvaluatorTester": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\mbwil\\source\\repos\\cs3500\\Spreadsheet\\FormulaEvaluatorTester\\bin\\Debug\\net6.0\\FormulaEvaluatorTester.exe"
+    }
+  }
+}
