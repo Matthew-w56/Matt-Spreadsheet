@@ -8,6 +8,46 @@ namespace DevelopmentTests {
     ///</summary>
     [TestClass()]
     public class DependencyGraphTest {
+
+        [TestMethod()]
+        public void MyAddTest() {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "d");
+            Assert.IsTrue(graph.Size == 2);
+            graph.AddDependency("a", "c");
+            Assert.IsTrue(graph.Size == 3);
+        }
+
+        [TestMethod()]
+        public void MyReplaceTest() {
+            //Create
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "d");
+            //Check size
+            Assert.IsTrue(graph.Size == 2);
+            //Add
+            graph.AddDependency("a", "c");
+            //Check size
+            Assert.IsTrue(graph.Size == 3);
+            //Replace c's dependent "d" with "a"
+            graph.ReplaceDependents("c", new List<string> { "a" });
+            Assert.IsTrue(graph.Size == 3);
+            //Check to make sure "c"'s dependent is "a"
+            IEnumerator<string> e1 = graph.GetDependents("c").GetEnumerator();
+            Assert.IsTrue(e1.MoveNext());
+            string val1 = e1.Current;
+            Assert.AreEqual(val1, "a");
+            //Replace back to D
+            graph.ReplaceDependees("c", new List<string> { "d" });
+            e1 = graph.GetDependents("c").GetEnumerator();
+            Assert.IsTrue(e1.MoveNext());
+            //Check again
+            val1 = e1.Current;
+            Assert.AreEqual(val1, "a");
+        }
+
         /// <summary>
         ///Empty graph should contain nothing
         ///</summary>

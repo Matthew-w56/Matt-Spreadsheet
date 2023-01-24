@@ -17,10 +17,10 @@ namespace SpreadsheetUtilities {
     /// 
     /// Given a DependencyGraph DG:
     /// 
-    ///    (1) If s is a string, the set of all strings t such that (s,t) is in DG iscalled dependents(s).
+    ///    (1) If s is a string, the set of all strings t such that (s,t) is in DG is called dependents(s).
     ///        (The set of things that depend on s)    
     ///        
-    ///    (2) If s is a string, the set of all strings t such that (t,s) is in DG iscalled dependees(s).
+    ///    (2) If s is a string, the set of all strings t such that (t,s) is in DG is called dependees(s).
     ///        (The set of things that s depends on) 
     //
     // For example, suppose DG = {("a", "b"), ("a", "c"), ("b", "d"), ("d", "d")}
@@ -34,18 +34,29 @@ namespace SpreadsheetUtilities {
     //     dependees("d") = {"b", "d"}
     /// </summary>
   public class DependencyGraph {
+
+        private Dictionary<string, List<string>> dependents;
+        private Dictionary<string, List<string>> dependees;
+
         /// <summary>
         /// Creates an empty DependencyGraph.
         /// </summary>
         public DependencyGraph() {
-
+            dependents = new();
+            dependees = new();
         }
 
         /// <summary>
         /// The number of ordered pairs in the DependencyGraph.
         /// </summary>
         public int Size {
-            get { return 0; }
+            get {
+                int totalSize = 0;
+                foreach (KeyValuePair<string, List<string>> pair in dependents) {
+                    totalSize += pair.Value.Count;
+                }
+                return totalSize;
+            }
         }
 
         /// <summary>
@@ -56,35 +67,37 @@ namespace SpreadsheetUtilities {
         /// It should return the size of dependees("a")
         /// </summary>
         public int this[string s] {
-            get { return 0; }
+            get { return (dependees.ContainsKey(s) ? dependees[s].Count : 0); }
         }
 
         /// <summary>
         /// Reports whether dependents(s) is non-empty.
         /// </summary>
         public bool HasDependents(string s) {
-            return false;
+            return dependents.ContainsKey(s);
         }
 
         /// <summary>
         /// Reports whether dependees(s) is non-empty.
         /// </summary>
         public bool HasDependees(string s) {
-            return false;
+            return dependees.ContainsKey(s);
         }
 
         /// <summary>
         /// Enumerates dependents(s).
         /// </summary>
         public IEnumerable<string> GetDependents(string s) {
-            return null;
+            if (dependents.ContainsKey(s)) return dependents[s];
+            return new List<string>(); //TODO: Does the tester want null values here?
         }
 
         /// <summary>
         /// Enumerates dependees(s).
         /// </summary>
         public IEnumerable<string> GetDependees(string s) {
-            return null;
+            if (dependees.ContainsKey(s)) return dependees[s];
+            return new List<string>(); //TODO: Does the tester want null values here?
         }
 
         /// <summary>
@@ -98,7 +111,13 @@ namespace SpreadsheetUtilities {
         /// <param name="s"> s must be evaluated first. T depends on S</param>
         /// <param name="t"> t cannot be evaluated until s is</param>
         public void AddDependency(string s, string t) {
+            //If s already has dependents, add t to the list.  Else, create new entry
+            if (dependents.ContainsKey(s)) dependents[s].Add(t);
+            else dependents.Add(s, new List<string> { t });
 
+            //If t already has dependees, add s to the list.  Else, create new entry.
+            if (dependees.ContainsKey(t)) dependees[t].Add(s);
+            else dependees.Add(t, new List<string> { s });
         }
 
         /// <summary>
@@ -107,7 +126,15 @@ namespace SpreadsheetUtilities {
         /// <param name="s"></param>
         /// <param name="t"></param>
         public void RemoveDependency(string s, string t) {
-
+            //If the link exists, remove it.
+            if (dependents.ContainsKey(s)) {
+                if (dependents[s].Count == 1) dependents.Remove(s);
+                else dependents[s].Remove(t);
+            }
+            if (dependees.ContainsKey(t)) {
+                if (dependees[t].Count == 1) dependees.Remove(t);
+                else dependees[t].Remove(s);
+            }
         }
 
         /// <summary>
@@ -115,7 +142,18 @@ namespace SpreadsheetUtilities {
         /// t in newDependents, adds the ordered pair (s,t).
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents) {
+            //Remove any existing dependents of s
+            if (dependents.ContainsKey(s)) {
+                List<string> items = dependents[s].ToList();
+                foreach (string item in items) {
+                    RemoveDependency(s, item);
+                }
+            }
 
+            //Add all desired dependents to s
+            foreach (string t in newDependents) {
+                AddDependency(s, t);
+            }
         }
 
         /// <summary>
@@ -123,7 +161,18 @@ namespace SpreadsheetUtilities {
         /// t in newDependees, adds the ordered pair (t,s).
         /// </summary>
         public void ReplaceDependees(string s, IEnumerable<string> newDependees) {
+            //Remove any existing dependents of s
+            if (dependees.ContainsKey(s)) {
+                List<string> items = dependees[s].ToList();
+                foreach (string item in items) {
+                    RemoveDependency(item, s);
+                }
+            }
 
+            //Add all desired dependents to s
+            foreach (string t in newDependees) {
+                AddDependency(t, s);
+            }
         }
     }
 }
