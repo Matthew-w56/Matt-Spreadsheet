@@ -114,7 +114,7 @@ namespace FormulaEvaluator
                     if (opStack.Count > 0 && (opStack.Peek() == "+" || opStack.Peek() == "-")) DoOperationFromStack();
 
                     //Stage 2: Expected '(' removal
-                    if (opStack.Pop() != "(") throw new ArgumentException("Improper Parentheses!");
+                    if (opStack.Count == 0 || opStack.Pop() != "(") throw new ArgumentException("Improper Parentheses!");
 
                     //Stage 3: Apply any * or / that point to this parentheses group
                     if (opStack.Count > 0 && (opStack.Peek() == "*" || opStack.Peek() == "/")) DoOperationFromStack();

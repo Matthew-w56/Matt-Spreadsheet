@@ -10,8 +10,83 @@ namespace DevelopmentTests {
     [TestClass()]
     public class DependencyGraphTest {
 
+        /// <summary>
+        /// Tests the functionality of the Indexer method
+        /// </summary>
         [TestMethod()]
-        public void MyReplaceTest() {
+        public void IndexerTest() {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "d");
+            //Should have a dependee
+            Assert.AreEqual(1, graph["b"]);
+            //Shouldn't have a dependee
+            Assert.AreEqual(0, graph["a"]);
+            //Isn't even in the graph
+            Assert.AreEqual(0, graph["e"]);
+        }
+
+        /// <summary>
+        /// Verifies the functionality of the HasDependents and HasDependees methods
+        /// </summary>
+        [TestMethod()]
+        public void HasCheckerTests() {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("c", "d");
+            graph.AddDependency("a", "d");
+
+            //-----[ Test the DEPENDENTS methods ]-----
+            //Should have a dependee
+            Assert.IsTrue(graph.HasDependents("a"));
+            //Should have a dependee
+            Assert.IsTrue(graph.HasDependents("c"));
+            //Should NOT have a dependee
+            Assert.IsFalse(graph.HasDependents("b"));
+            //Should NOT have a dependee
+            Assert.IsFalse(graph.HasDependents("d"));
+            //Doesn't even exist in graph
+            Assert.IsFalse(graph.HasDependents("e"));
+
+            //-----[ Test the DEPENDEES methods ]-----
+            //Should have a dependee
+            Assert.IsTrue(graph.HasDependees("d"));
+            //Should have a dependee
+            Assert.IsTrue(graph.HasDependees("b"));
+            //Should NOT have a dependee
+            Assert.IsFalse(graph.HasDependees("a"));
+            //Should NOT have a dependee
+            Assert.IsFalse(graph.HasDependees("c"));
+            //Doesn't even exist in graph
+            Assert.IsFalse(graph.HasDependees("e"));
+        }
+
+        /// <summary>
+        /// Tests each possible situation with an Add
+        /// </summary>
+        [TestMethod()]
+        public void ComprehensiveAddTest() {
+            DependencyGraph graph = new DependencyGraph();
+            //Both are new
+            graph.AddDependency("a", "b");
+            Assert.AreEqual(1, graph.Size);
+            //Only dependent is new
+            graph.AddDependency("a", "c");
+            Assert.AreEqual(2, graph.Size);
+            //Only dependee is new
+            graph.AddDependency("d", "b");
+            graph.AddDependency("e", "a");
+            Assert.AreEqual(4, graph.Size);
+            //Neither are new
+            graph.AddDependency("a", "d");
+            Assert.AreEqual(5, graph.Size);
+        }
+
+        /// <summary>
+        /// Tests the Replace method when there are multiple dependencies in play.
+        /// </summary>
+        [TestMethod()]
+        public void NextLevelReplaceTest() {
             //Create
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
@@ -82,7 +157,7 @@ namespace DevelopmentTests {
         public void SimpleReplaceTest() {
             DependencyGraph t = new DependencyGraph();
             t.AddDependency("x", "y");
-            Assert.AreEqual(t.Size, 1);
+            Assert.AreEqual(1, t.Size);
             t.RemoveDependency("x", "y");
             t.ReplaceDependents("x", new HashSet<string>());
             t.ReplaceDependees("y", new HashSet<string>());
