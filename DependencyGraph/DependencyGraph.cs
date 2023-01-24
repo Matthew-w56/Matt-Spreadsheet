@@ -4,6 +4,18 @@ using System.Linq;
 using System.Text;
 
 ///NOTE TO SELF: As a rough guideline to help you pick the right data structure(s), determining if a certain node exists in the graph should have constant time complexity O(1).
+//
+//TODO
+//These should be O(1)
+//-HasDependent/dee
+//-Add/RemoveDependency
+//-Double check that removing/adding from/to a dependent list is constant time, not linear
+
+//Possible things to check for the error
+// - Assymmetry in the two structures
+// - In Replace function, try overriding the one structure explicitly, and going through it's old list to the other structure
+    //      Don't just call the general removeDependency for each?
+
 
 namespace SpreadsheetUtilities {
     /// <summary>
@@ -35,8 +47,8 @@ namespace SpreadsheetUtilities {
     /// </summary>
   public class DependencyGraph {
 
-        private Dictionary<string, List<string>> dependents;
-        private Dictionary<string, List<string>> dependees;
+        private Dictionary<string, HashSet<string>> dependents;
+        private Dictionary<string, HashSet<string>> dependees;
 
         /// <summary>
         /// Creates an empty DependencyGraph.
@@ -52,7 +64,7 @@ namespace SpreadsheetUtilities {
         public int Size {
             get {
                 int totalSize = 0;
-                foreach (KeyValuePair<string, List<string>> pair in dependents) {
+                foreach (KeyValuePair<string, HashSet<string>> pair in dependents) {
                     totalSize += pair.Value.Count;
                 }
                 return totalSize;
@@ -88,16 +100,16 @@ namespace SpreadsheetUtilities {
         /// Enumerates dependents(s).
         /// </summary>
         public IEnumerable<string> GetDependents(string s) {
-            if (dependents.ContainsKey(s) && dependents[s] != null) return dependents[s].AsEnumerable<string>();
-            return new List<string>();
+            if (dependents.ContainsKey(s) && dependents[s] != null) return dependents[s];
+            return new HashSet<string>();
         }
 
         /// <summary>
         /// Enumerates dependees(s).
         /// </summary>
         public IEnumerable<string> GetDependees(string s) {
-            if (dependees.ContainsKey(s)) return dependees[s];
-            return new List<string>();
+            if (dependees.ContainsKey(s) && dependees[s] != null) return dependees[s];
+            return new HashSet<string>();
         }
 
         /// <summary>
@@ -113,11 +125,11 @@ namespace SpreadsheetUtilities {
         public void AddDependency(string s, string t) {
             //If s already has dependents, add t to the list.  Else, create new entry
             if (dependents.ContainsKey(s)) dependents[s].Add(t);
-            else dependents.Add(s, new List<string> { t });
+            else dependents.Add(s, new HashSet<string> { t });
 
             //If t already has dependees, add s to the list.  Else, create new entry.
             if (dependees.ContainsKey(t)) dependees[t].Add(s);
-            else dependees.Add(t, new List<string> { s });
+            else dependees.Add(t, new HashSet<string> { s });
         }
 
         /// <summary>
@@ -128,11 +140,11 @@ namespace SpreadsheetUtilities {
         public void RemoveDependency(string s, string t) {
             //If the link exists, remove it.
             if (dependents.ContainsKey(s)) {
-                if (dependents[s].Count == 1) dependents.Remove(s);
+                if (dependents[s].Count < 2) dependents.Remove(s);
                 else dependents[s].Remove(t);
             }
             if (dependees.ContainsKey(t)) {
-                if (dependees[t].Count == 1) dependees.Remove(t);
+                if (dependees[t].Count < 2) dependees.Remove(t);
                 else dependees[t].Remove(s);
             }
         }
