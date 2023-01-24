@@ -3,19 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-///NOTE TO SELF: As a rough guideline to help you pick the right data structure(s), determining if a certain node exists in the graph should have constant time complexity O(1).
-//
-//TODO
-//These should be O(1)
-//-HasDependent/dee
-//-Add/RemoveDependency
-//-Double check that removing/adding from/to a dependent list is constant time, not linear
-
-//Possible things to check for the error
-// - Assymmetry in the two structures
-// - In Replace function, try overriding the one structure explicitly, and going through it's old list to the other structure
-    //      Don't just call the general removeDependency for each?
-
 
 namespace SpreadsheetUtilities {
     /// <summary>
@@ -63,6 +50,7 @@ namespace SpreadsheetUtilities {
         /// </summary>
         public int Size {
             get {
+                //Add up the count of each pair in one of the sets (dependents used here arbitrarily)
                 int totalSize = 0;
                 foreach (KeyValuePair<string, HashSet<string>> pair in dependents) {
                     totalSize += pair.Value.Count;
