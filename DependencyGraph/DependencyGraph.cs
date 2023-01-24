@@ -88,8 +88,8 @@ namespace SpreadsheetUtilities {
         /// Enumerates dependents(s).
         /// </summary>
         public IEnumerable<string> GetDependents(string s) {
-            if (dependents.ContainsKey(s)) return dependents[s];
-            return new List<string>(); //TODO: Does the tester want null values here?
+            if (dependents.ContainsKey(s) && dependents[s] != null) return dependents[s].AsEnumerable<string>();
+            return new List<string>();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SpreadsheetUtilities {
         /// </summary>
         public IEnumerable<string> GetDependees(string s) {
             if (dependees.ContainsKey(s)) return dependees[s];
-            return new List<string>(); //TODO: Does the tester want null values here?
+            return new List<string>();
         }
 
         /// <summary>
