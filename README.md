@@ -1,4 +1,4 @@
-'''
+
 Author:		Matthew Williams
 Partner:	None
 Date:		12-Jan-2023
@@ -8,7 +8,7 @@ Repo:		https://github.com/uofu-cs3500-spring23/spreadsheet-Matthew-w56
 Date:		TBD
 Solution:	Spreadsheet
 Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in Academic Coursework
-'''
+
 
 # Overview of the Spreadsheet Functionality
 
@@ -27,4 +27,4 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 
 	Assignment				Predicted	Actual		Notes
 	1 - Formula Evaluator	5			2.5			Last half hour spend documenting
-	2 - Dependency Graph	4			2.5 sofar	fought with Stress test for 1.5 hours
+	2 - Dependency Graph	4			3.2			fought with Stress test for 1.5 hours

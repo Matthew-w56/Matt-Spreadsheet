@@ -1,4 +1,4 @@
-﻿'''
+﻿
 Author:			Matthew Williams
 Partner:		None
 Start Date:		12-Jan-2023
@@ -8,7 +8,13 @@ Repo:			https://github.com/uofu-cs3500-spring23/spreadsheet-Matthew-w56
 Finish Date:	12-Jan-2023
 Project:		Formula Evaluator
 Copyright:		CS 3500 and Matthew Williams - This work may not be copied for use in Academic Coursework
-'''
+
+Personal Statement: I wrote this code myself and did not take it from any other sources other than those listed below.
+
+# Summary
+
+	This Project contains a class that has a method that allows a string expression to be passed in, and an integer result
+	to be returned.  It also allows the use of variables, which consist of one or more letters followed by one or more numbers.
 
 # Comments to Evaluators
 
