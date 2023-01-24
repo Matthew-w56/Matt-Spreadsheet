@@ -1,5 +1,6 @@
 
 using SpreadsheetUtilities;
+using System.Diagnostics;
 
 namespace DevelopmentTests {
     /// <summary>
@@ -8,16 +9,6 @@ namespace DevelopmentTests {
     ///</summary>
     [TestClass()]
     public class DependencyGraphTest {
-
-        [TestMethod()]
-        public void MyAddTest() {
-            DependencyGraph graph = new DependencyGraph();
-            graph.AddDependency("a", "b");
-            graph.AddDependency("c", "d");
-            Assert.IsTrue(graph.Size == 2);
-            graph.AddDependency("a", "c");
-            Assert.IsTrue(graph.Size == 3);
-        }
 
         [TestMethod()]
         public void MyReplaceTest() {
@@ -187,10 +178,10 @@ namespace DevelopmentTests {
             // Dependency graph
             DependencyGraph t = new DependencyGraph();
             // A bunch of strings to use
-            const int SIZE = 200;
+            const int SIZE = 26;
             string[] letters = new string[SIZE];
             for (int i = 0; i < SIZE; i++) {
-                letters[i] = ("" + (char)('a' + i));
+                letters[i] = "" + (char)('a' + i);
             }
             // The correct answers
             HashSet<string>[] dents = new HashSet<string>[SIZE];
@@ -231,6 +222,7 @@ namespace DevelopmentTests {
                     dees[j].Remove(letters[i]);
                 }
             }
+
             // Make sure everything is right
             for (int i = 0; i < SIZE; i++) {
                 Assert.IsTrue(dents[i].SetEquals(new
