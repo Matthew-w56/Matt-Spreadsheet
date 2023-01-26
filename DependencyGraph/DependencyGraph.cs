@@ -52,8 +52,8 @@ namespace SpreadsheetUtilities {
             get {
                 //Add up the count of each pair in one of the sets (dependents used here arbitrarily)
                 int totalSize = 0;
-                foreach (KeyValuePair<string, HashSet<string>> pair in dependents) {
-                    totalSize += pair.Value.Count;
+                foreach (HashSet<string> val in dependents.Values) {
+                    totalSize += val.Count;
                 }
                 return totalSize;
             }
