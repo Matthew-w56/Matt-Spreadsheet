@@ -26,5 +26,6 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	(Future assignments' predicted time tbd)
 
 	Assignment				Predicted	Actual		Notes
-	1 - Formula Evaluator	5			2.5			Last half hour spend documenting
-	2 - Dependency Graph	4			3.2			fought with Stress test for 1.5 hours
+	1 - Formula Evaluator	5			2:30		Last half hour spend documenting
+	2 - Dependency Graph	4			3:12		Fought with Stress test for 1.5 hours
+	3 - Formula Class		4			3:42		Spent 30 minutes adjusting Visual Studio settings
