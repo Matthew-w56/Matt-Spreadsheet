@@ -164,13 +164,17 @@ namespace FormulaTests {
 		/// </summary>
 		[TestMethod()]
 		public void BasicEvaluateTest() {
-			Formula f1 = new Formula("3 - 1");
+			Formula f1 = new Formula("3 / 3");
 			double val = (double) f1.Evaluate((v) => 1);
-			Assert.IsTrue(val.Equals(2.0));
+			Assert.IsTrue(val.Equals(1.0));
 
 			Formula f2 = new Formula("A22 * (6 + b2)");
 			double val2 = (double)f2.Evaluate((v) => 5);
 			Assert.IsTrue(val2.Equals(55));
+
+			Formula f3 = new Formula("3 - 2");
+			double val3 = (double)f3.Evaluate((v) => 1);
+			Assert.IsTrue(val3.Equals(1.0));
 		}
 
 		/// <summary>
