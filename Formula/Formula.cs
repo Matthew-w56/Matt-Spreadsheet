@@ -113,9 +113,9 @@ namespace SpreadsheetUtilities {
 			//Check that the tokens array has items in it.
 			if (tokens.Count == 0) throw new FormulaFormatException("Empty expression!  Formula cannot be empty.");
 
+			//Verify first token
 			if (
-				!IsOperator(tokens[0])
-				&& tokens[0] != "("
+				   tokens[0] != "("
 				&& !IsValidVar(tokens[0], isValid)
 				&& !IsNumber(tokens[0])
 			   )

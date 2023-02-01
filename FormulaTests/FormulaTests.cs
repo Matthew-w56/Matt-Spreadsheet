@@ -293,6 +293,15 @@ namespace FormulaTests {
 			}
 		}
 
+		/// <summary>
+		/// Makes sure that leading negatives are not allowed
+		/// </summary>
+		[TestMethod()]
+		[ExpectedException(typeof(FormulaFormatException))]
+		public void InvalidSyntaxTest() {
+			Formula f1 = new Formula("-2 + 2");
+		}
+
 
 
 
