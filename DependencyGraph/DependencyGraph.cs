@@ -88,7 +88,7 @@ namespace SpreadsheetUtilities {
         /// Enumerates dependents(s).
         /// </summary>
         public IEnumerable<string> GetDependents(string s) {
-            if (dependents.ContainsKey(s) && dependents[s] != null) return dependents[s];
+            if (dependents.ContainsKey(s) && dependents[s] != null) return new HashSet<string>(dependents[s]);
             return new HashSet<string>();
         }
 
@@ -96,7 +96,7 @@ namespace SpreadsheetUtilities {
         /// Enumerates dependees(s).
         /// </summary>
         public IEnumerable<string> GetDependees(string s) {
-            if (dependees.ContainsKey(s) && dependees[s] != null) return dependees[s];
+            if (dependees.ContainsKey(s) && dependees[s] != null) return new HashSet<string>(dependees[s]);
             return new HashSet<string>();
         }
 
