@@ -9,6 +9,11 @@ using System.Text.RegularExpressions;
 
 namespace FormulaTests {
 
+	/// <summary>
+	/// This class runs tests on the Formula.cs class in the Formula project.  It covers all kinds of cases.
+	/// Author: Matthew Williams
+	/// </summary>
+
 	[TestClass()]
 	public class FormulaTests {
 
@@ -248,7 +253,9 @@ namespace FormulaTests {
 			Assert.IsFalse(new Formula("3.00000000000000001 * 3") != new Formula("3*3  "));
 		}
 
-		//Makes sure the GetVariables returns the right set
+		/// <summary>
+		/// Makes sure the GetVariables returns the right set
+		/// </summary>
 		[TestMethod()]
 		public void GetVariablesTest() {
 			Formula f1 = new Formula("A1 - A2");
