@@ -16,14 +16,18 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 		Currently, the Solution has a Library that takes care of evaluating the formula
 		typed in by the user.  It also has a class that will track the dependencies in the
 		cells, and will allow things to get evaluated in the right order.
+		These are utilized by a Spreadsheet class that tracks dependencies, utilizes formulas,
+		and keeps track of what cells have something in them.
 
 	2. Future Functionality
 		Eventually, the Solution will be a full, working Spreadsheet program that allows the user to use
 		mathematical formulas between cells, input information, and safe and retrieve their files.
+		Features that will arrive soon will likely be handling the values (as opposed to contents) of cells,
+		and a GUI to interact with the Spreadsheet with.
 
 
 # Time Expenditures:
-	(Future assignments' predicted time tbd)
+	(Future assignments' predicted time TBD)
 
 	Assignment				Predicted	Actual		Notes
 	1 - Formula Evaluator	5			2:30		Last half hour spend documenting
@@ -32,4 +36,4 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	
 	Better Time Breakout (Should have done this earlier)
 	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total
-	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:14		0:45
+	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:30		2:36
