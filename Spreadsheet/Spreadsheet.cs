@@ -73,42 +73,85 @@ namespace SS {
 			return dg.GetDependents(name);
 		}
 
+		/// <summary>
+		/// Takes care of the repeated tasks associated with setting a cell's contents.
+		/// 
+		/// If the list of cells with contents already has this cell, then
+		/// it replaces the content, and makes sure that dependencies are
+		/// updated as well to keep the dependency graph up to date.
+		/// 
+		/// If the cell is set with "" as the contents, the cell is removed from the
+		/// list of cells with non-empty contents
+		/// 
+		/// If the cell doesn't already exist, it creates it.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="contents"></param>
 		protected void StoreCellContents(string name, object contents) {
-			VerifyCellName(name);
 			if (cells.ContainsKey(name)) {
 				if (contents is Formula) {
+					//Remove any dependencies related to the previous Formula
+					//(The SetCellContents method adds the new ones after this method runs)
 					foreach (string previousDependee in dg.GetDependees(name)) {
 						dg.RemoveDependency(previousDependee, name);
 					}
 				} else if (contents is string && contents.Equals("")) {
+					//Remove a cell from the list of non-empty cells if it's new content is just "".
 					cells.Remove(name);
 					return;
 				}
-
+				//Actually change the cell object's contents
 				cells[name].setContents(contents);
 			} else {
+				//Don't add the cell if it's new value will just be "".
+				if (contents is string && contents.Equals("")) return;
+				//Otherwise, add a new cell for the desired contents
 				cells.Add(name, new Cell(contents));
 			}
 		}
 
 		protected void VerifyCellName(string name) {
+			//Name isn't null
 			if (name is null) throw new InvalidNameException();
+			//Name starts with a letter or underscore
 			if (!Regex.Match(name.Substring(0, 1), "[a-zA-Z]|_").Success) throw new InvalidNameException();
+			//Name consists only of letters, numbers, and underscores
 			if (Regex.Match(name, "[^a-zA-Z0-9_]").Success) throw new InvalidNameException();
 		}
 	}
 
+	/// <summary>
+	/// Represents a single cell in the spreadsheet, and currently only
+	/// serves as a container for the content that it holds.
+	/// 
+	/// At this point in the program, it doesn't make sense to introduce the
+	/// overhead of individual classes for each cell, but we are informed that
+	/// it will become efficient and helpful later on.
+	/// </summary>
 	internal class Cell {
 		protected object content;
 
+		/// <summary>
+		/// Creates a cell object with some content in it
+		/// The content is a string, double, or Formula object
+		/// </summary>
+		/// <param name="_content">Thing that is inside the cell</param>
 		public Cell(object _content) {
 			content = _content;
 		}
 
+		/// <summary>
+		/// Returns the contents of the cell
+		/// </summary>
+		/// <returns>Cell's contents</returns>
 		public object getContents() {
 			return content;
 		}
 
+		/// <summary>
+		/// Sets the contents of the cell to the given input
+		/// </summary>
+		/// <param name="contents">New content of the cell</param>
 		public void setContents(object contents) {
 			content = contents;
 		}

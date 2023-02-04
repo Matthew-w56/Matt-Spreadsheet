@@ -1,21 +1,34 @@
-
-
-
+/// <summary>
+/// 
+/// This file contains tests for the Spreadsheet.cs Class
+/// 
+/// Author: Matthew Williams	February 2023
+/// 
+/// </summary>
 
 using SpreadsheetUtilities;
 using SS;
-using System.Diagnostics;
 
 namespace SpreadsheetTests {
 
+	/// <summary>
+	/// Tests the Spreadsheet class, which is an implementation of
+	/// the AbstractSpreadsheet abstract class.
+	/// </summary>
 	[TestClass]
 	public class SpreadsheetTests {
 
+		/// <summary>
+		/// See title.
+		/// </summary>
 		[TestMethod()]
 		public void TestConstructor() {
 			SS.Spreadsheet s = new();
 		}
 
+		/// <summary>
+		/// See title.
+		/// </summary>
 		[TestMethod()]
 		public void SetCellContentsTest() {
 			SS.Spreadsheet s = new();
@@ -24,6 +37,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents("A3", new Formula("(3+4)*7"));
 		}
 
+		/// <summary>
+		/// See title.
+		/// </summary>
 		[TestMethod()]
 		public void GetCellContentsTest() {
 			SS.Spreadsheet s = new();
@@ -37,14 +53,20 @@ namespace SpreadsheetTests {
 			Assert.IsTrue(new Formula("(3+4)*7").Equals((Formula) s.GetCellContents("A3")));
 		}
 
+		/// <summary>
+		/// Tries to get an Empty cell's contents
+		/// </summary>
 		[TestMethod()]
 		public void GetEmptyCellContentsTest() {
 			SS.Spreadsheet s = new();
 			Assert.IsTrue("".Equals((string) s.GetCellContents("A1")));
 		}
 
+		/// <summary>
+		/// See title.
+		/// </summary>
 		[TestMethod()]
-		public void GetEmptyCellNamesTest() {
+		public void GetNonEmptyCellNamesTest() {
 			SS.Spreadsheet s = new();
 			s.SetCellContents("A1", "Hello, world!");
 			s.SetCellContents("A2", 3.20);
@@ -57,11 +79,17 @@ namespace SpreadsheetTests {
 			Assert.IsTrue(names.Contains("A3"));
 		}
 
+		/// <summary>
+		/// Set's the content of a cell that already has
+		/// something else in it.
+		/// </summary>
 		[TestMethod()]
 		public void SetExistingCellContentsTest() {
+			//Initialize the sheet
 			SS.Spreadsheet s = new();
 			s.SetCellContents("A1", "Hello, world!");
 
+			//Reset the contents
 			s.SetCellContents("A1", "Goodbye");
 			Assert.AreEqual("Goodbye", (string) s.GetCellContents("A1"));
 
@@ -72,6 +100,9 @@ namespace SpreadsheetTests {
 			Assert.AreEqual(new Formula("3+3"), (Formula) s.GetCellContents("A1"));
 		}
 
+		/// <summary>
+		/// See title.
+		/// </summary>
 		[TestMethod()]
 		public void BasicDependencyTest() {
 			SS.Spreadsheet s = new();
@@ -84,6 +115,12 @@ namespace SpreadsheetTests {
 			Assert.IsTrue(cellsToRecalculate.Contains("C1"));
 		}
 
+		/// <summary>
+		/// Replaces the contents of one Formula that creates
+		/// dependencies with another that create a different
+		/// set of dependencies.  Should cleanly end with only
+		/// the new set of dependencies stored in the sheet.
+		/// </summary>
 		[TestMethod()]
 		public void ReplaceDependenciesTest() {
 			SS.Spreadsheet s = new();
@@ -115,6 +152,9 @@ namespace SpreadsheetTests {
 			Assert.IsTrue(newCellsToRedo.Contains("A1"));
 		}
 
+		/// <summary>
+		/// Attempts to create a cell that is dependent on itself
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(SS.CircularException))]
 		public void CircularDependencyDirectTest() {
@@ -122,6 +162,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents("A1", new Formula("A1 - 3"));
 		}
 
+		/// <summary>
+		/// Attempts to create an indirect circular dependency cycle
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(SS.CircularException))]
 		public void CircularDependencyIndirectTest() {
@@ -130,6 +173,10 @@ namespace SpreadsheetTests {
 			s.SetCellContents("B1", new Formula("A1 + 3"));
 		}
 
+		/// <summary>
+		/// Tests that cells set with "" as their value are removed from the
+		/// list of cells that are not empty
+		/// </summary>
 		[TestMethod()]
 		public void RemoveEmptyCellTest() {
 			SS.Spreadsheet s = new();
@@ -139,6 +186,9 @@ namespace SpreadsheetTests {
 			Assert.IsTrue(s.GetNamesOfAllNonemptyCells().Count() == 0);
 		}
 
+		/// <summary>
+		/// Attempts to reference an invalid cell name
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(InvalidNameException))]
 		public void InvalidCellNameTest() {
@@ -146,6 +196,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents("&22", "Hello world!");
 		}
 
+		/// <summary>
+		/// Attempts to reference an invalid cell name
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(InvalidNameException))]
 		public void InvalidCellNameTest2() {
@@ -153,6 +206,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents("b2$", "Hello world!");
 		}
 
+		/// <summary>
+		/// Attempts to reference a null cell name
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(InvalidNameException))]
 		public void InvalidCellNameTest3() {
@@ -160,6 +216,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents(null, "Hello world!");
 		}
 
+		/// <summary>
+		/// Attempts to set a cell's contents to null
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void SetNullCellContentsTest() {
@@ -168,6 +227,9 @@ namespace SpreadsheetTests {
 			s.SetCellContents("A3", val);
 		}
 
+		/// <summary>
+		/// Attempts to set a cell's formula to null
+		/// </summary>
 		[TestMethod()]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void SetNullCellFormulaTest() {

@@ -31,5 +31,5 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	3 - Formula Class		4			4:45		Spent 30 minutes adjusting Visual Studio settings
 	
 	Better Time Breakout (Should have done this earlier)
-	Assignment				Predicted	Coding		Debugging	Testing		Research	Total
-	4 - Spreadsheet Class	5			0:45		0:03		0:06		0:00		0:45
+	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total
+	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:14		0:45
