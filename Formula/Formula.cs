@@ -34,7 +34,7 @@ namespace SpreadsheetUtilities {
 	/// <summary>
 	/// Represents formulas written in standard infix notation using standard precedence
 	/// rules.  The allowed symbols are non-negative numbers written using double-precision 
-	/// floating-point syntax (without unary preceeding '-' or '+'); 
+	/// floating-point syntax (without unary preceding '-' or '+'); 
 	/// variables that consist of a letter or underscore followed by 
 	/// zero or more letters, underscores, or digits; parentheses; and the four operator 
 	/// symbols +, -, *, and /.  

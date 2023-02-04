@@ -29,3 +29,7 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	1 - Formula Evaluator	5			2:30		Last half hour spend documenting
 	2 - Dependency Graph	4			3:12		Fought with Stress test for 1.5 hours
 	3 - Formula Class		4			4:45		Spent 30 minutes adjusting Visual Studio settings
+	
+	Better Time Breakout (Should have done this earlier)
+	Assignment				Predicted	Coding		Debugging	Testing		Research	Total
+	4 - Spreadsheet Class	5			0:45		0:03		0:06		0:00		0:45
