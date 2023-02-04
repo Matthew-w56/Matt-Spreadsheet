@@ -3,6 +3,7 @@
 
 
 using SpreadsheetUtilities;
+using SS;
 using System.Diagnostics;
 
 namespace SpreadsheetTests {
@@ -127,6 +128,52 @@ namespace SpreadsheetTests {
 			SS.Spreadsheet s = new();
 			s.SetCellContents("A1", new Formula("B1 - 3"));
 			s.SetCellContents("B1", new Formula("A1 + 3"));
+		}
+
+		[TestMethod()]
+		public void RemoveEmptyCellTest() {
+			SS.Spreadsheet s = new();
+			s.SetCellContents("A1", "Hey dude!");
+			Assert.IsTrue(s.GetNamesOfAllNonemptyCells().Count() == 1);
+			s.SetCellContents("A1", "");
+			Assert.IsTrue(s.GetNamesOfAllNonemptyCells().Count() == 0);
+		}
+
+		[TestMethod()]
+		[ExpectedException(typeof(InvalidNameException))]
+		public void InvalidCellNameTest() {
+			SS.Spreadsheet s = new();
+			s.SetCellContents("&22", "Hello world!");
+		}
+
+		[TestMethod()]
+		[ExpectedException(typeof(InvalidNameException))]
+		public void InvalidCellNameTest2() {
+			SS.Spreadsheet s = new();
+			s.SetCellContents("b2$", "Hello world!");
+		}
+
+		[TestMethod()]
+		[ExpectedException(typeof(InvalidNameException))]
+		public void InvalidCellNameTest3() {
+			SS.Spreadsheet s = new();
+			s.SetCellContents(null, "Hello world!");
+		}
+
+		[TestMethod()]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void SetNullCellContentsTest() {
+			SS.Spreadsheet s = new();
+			string val = null;
+			s.SetCellContents("A3", val);
+		}
+
+		[TestMethod()]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void SetNullCellFormulaTest() {
+			SS.Spreadsheet s = new();
+			Formula val = null;
+			s.SetCellContents("A3", val);
 		}
 	}
 }

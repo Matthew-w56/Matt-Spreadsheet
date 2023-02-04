@@ -1,7 +1,7 @@
 ﻿// Written by Joe Zachary for CS 3500, September 2013
 using System;
 using System.Collections.Generic;
-using Spreadsheet;
+using static SS.Spreadsheet;
 using System.Threading.Channels;
 using System.Xml.Linq;
 using SpreadsheetUtilities;
@@ -210,7 +210,7 @@ namespace SS {
 		/// 
 		/// <param name="name"></param>
 		/// <returns>
-		///   Returns an enumeration, without duplicates, of the names of all cellsthat contain
+		///   Returns an enumeration, without duplicates, of the names of all cells that contain
 		///   formulas containing name.
 		/// 
 		///   <para>For example, suppose that: </para>
