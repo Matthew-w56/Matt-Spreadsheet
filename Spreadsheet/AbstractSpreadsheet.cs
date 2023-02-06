@@ -1,4 +1,14 @@
 ﻿// Written by Joe Zachary for CS 3500, September 2013
+
+/// <summary>
+/// Contains an abstract class defining what a Spreadsheet object does, and in what manner
+/// each item is to be done.  Written by Joe Zachary and provided as part of the course
+/// material.
+/// 
+/// Utilized by Matthew Williams
+/// February 2023
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using static SS.Spreadsheet;
