@@ -1,8 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
+/// <summary>
+/// This file is part of SpreadsheetUtilities, and provides a class for
+/// tracking dependencies among cells in our spreadsheet.  Entries can be
+/// added, and queries can be filled regarding the dependency situation of
+/// a cell.  This includes getting the dependents of a cell, as well as the
+/// cells to which a given cell is a dependent itself.
+/// 
+/// Author: Matthew Williams
+/// </summary>
 
 namespace SpreadsheetUtilities {
     /// <summary>

@@ -1,4 +1,13 @@
 
+/// <summary>
+/// This file contributes to the DevelopmentTests name-space with
+/// a class that runs a series of tests of the DependencyGraph class.
+/// These tests range from valid and invalid instantiations, to
+/// ensuring correct dependency tracking.
+/// 
+/// Author: Matthew Williams
+/// </summary>
+
 using SpreadsheetUtilities;
 using System.Diagnostics;
 
