@@ -1,6 +1,8 @@
 /// <summary>
 /// 
-/// This file contains tests for the Spreadsheet.cs Class
+/// This file contains tests for the Spreadsheet.cs class.
+/// Tests range from constructor tests to dependency tracking tests, and
+/// go to data replacement, Formula handling, and data retrieval
 /// 
 /// Author: Matthew Williams	February 2023
 /// 

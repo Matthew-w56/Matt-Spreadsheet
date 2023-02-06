@@ -2,7 +2,7 @@
 /// 
 /// This file contains the implementation of the AbstractSpreadsheet class.
 /// 
-/// The class tracks dependencies, used cells, and is used to manipulate the
+/// The class tracks dependencies and used cells, and is used to manipulate the
 /// data of the spreadsheet.
 /// 
 /// Author: Matthew Williams    February 2023
