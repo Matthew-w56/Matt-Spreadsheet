@@ -129,6 +129,7 @@ namespace SS {
 	/// it will become efficient and helpful later on.
 	/// </summary>
 	internal class Cell {
+
 		protected object content;
 
 		/// <summary>

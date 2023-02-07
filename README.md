@@ -36,4 +36,4 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	
 	Better Time Breakout (Should have done this earlier)
 	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total
-	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:30		2:36
+	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:35		2:41
