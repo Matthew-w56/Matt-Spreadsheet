@@ -250,28 +250,27 @@ namespace SpreadsheetUtilities {
 				//Get ready to catch a numerical value
 				double numVal;
 				if (double.TryParse(token, out numVal)) { //Is it a double?
-					ApplyDouble(numVal);
+					try { ApplyDouble(numVal); } catch (ArgumentException) {
+						return new FormulaError("Cannot divide by zero!"); }
 
-					//If the token is a +/- operator
-				}
-				else if (token == "+" || token == "-") {
+				//If the token is a +/- operator
+				} else if (token == "+" || token == "-") {
 					//If the operator stack already has one of those
 					if (opStack.Count > 0 && (opStack.Peek() == "+" || opStack.Peek() == "-")) {
 						//Take care of the previous one now
-						DoOperationFromStack();
+						try { DoOperationFromStack(); } catch (ArgumentException) 
+							{ return new FormulaError("Cannot divide by zero!"); }
 					}
 					//Either way, store the current operator token for later
 					opStack.Push(token);
 
 					//If the token is a * or / operator             
-				}
-				else if (token == "*" || token == "/") {
+				} else if (token == "*" || token == "/") {
 					//Push it to the stack
 					opStack.Push(token);
 
 					//If the token is an opening parentheses
-				}
-				else if (token == "(") {
+				} else if (token == "(") {
 					//Push it to the stack
 					opStack.Push(token);
 
@@ -296,7 +295,14 @@ namespace SpreadsheetUtilities {
 				else {
 					//Try to look up the value of the variable, then treat it just like a double
 					//No normalization is done here because tokens are normalized upon instantiation
-					try { ApplyDouble(lookup(token)); }
+					try {
+						double val = lookup(token);
+						try {
+							ApplyDouble(val); 
+						} catch (ArgumentException) {
+							return new FormulaError("Cannot divide by zero!");
+						}
+					}
 					catch (ArgumentException) { return new FormulaError($"No value exists for variable {token}!"); }
 
 				}
