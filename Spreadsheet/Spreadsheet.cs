@@ -29,27 +29,32 @@ namespace SS {
 		//A dictionary of all cells that are not empty
 		Dictionary<string, Cell> cells;
 
+		/// <inheritdoc />
 		public Spreadsheet() {
 			dg = new();
 			cells = new();
 		}
 
+		/// <inheritdoc />
 		public override object GetCellContents(string name) {
 			VerifyCellName(name);
 			if (cells.ContainsKey(name)) return cells[name].getContents();
 			else return "";
 		}
 
+		/// <inheritdoc />
 		public override IEnumerable<string> GetNamesOfAllNonemptyCells() {
 			return new List<string> (cells.Keys);
 		}
 
+		/// <inheritdoc />
 		public override ISet<string> SetCellContents(string name, double number) {
 			VerifyCellName(name);
 			StoreCellContents(name, number);
 			return new HashSet<string>(GetCellsToRecalculate(name));
 		}
 
+		/// <inheritdoc />
 		public override ISet<string> SetCellContents(string name, string text) {
 			VerifyCellName(name);
 			if (text is null) throw new ArgumentNullException("Argument 'text' cannot be null!");
@@ -57,6 +62,7 @@ namespace SS {
 			return new HashSet<string>(GetCellsToRecalculate(name));
 		}
 
+		/// <inheritdoc />
 		public override ISet<string> SetCellContents(string name, Formula formula) {
 			VerifyCellName(name);
 			if (formula is null) throw new ArgumentNullException("Argument 'formula' cannot be null!");
@@ -68,6 +74,7 @@ namespace SS {
 			return new HashSet<string>(GetCellsToRecalculate(name));
 		}
 
+		/// <inheritdoc />
 		protected override IEnumerable<string> GetDirectDependents(string name) {
 			VerifyCellName(name);
 			return dg.GetDependents(name);
