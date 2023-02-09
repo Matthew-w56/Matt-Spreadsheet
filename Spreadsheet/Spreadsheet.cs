@@ -120,10 +120,8 @@ namespace SS {
 		protected void VerifyCellName(string name) {
 			//Name isn't null
 			if (name is null) throw new InvalidNameException();
-			//Name starts with a letter or underscore
-			if (!Regex.Match(name.Substring(0, 1), "[a-zA-Z]|_").Success) throw new InvalidNameException();
-			//Name consists only of letters, numbers, and underscores
-			if (Regex.Match(name, "[^a-zA-Z0-9_]").Success) throw new InvalidNameException();
+			//Name follows required syntax
+			if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$")) throw new InvalidNameException();
 		}
 	}
 

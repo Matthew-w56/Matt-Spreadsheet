@@ -99,7 +99,7 @@ namespace SpreadsheetTests {
 			Assert.AreEqual(3.3, (double) s.GetCellContents("A1"));
 
 			s.SetCellContents("A1", new Formula("3+3"));
-			Assert.AreEqual(new Formula("3+3"), (Formula) s.GetCellContents("A1"));
+			Assert.AreEqual(new Formula("3+3"), s.GetCellContents("A1"));
 		}
 
 		/// <summary>
