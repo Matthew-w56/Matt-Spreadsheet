@@ -26,6 +26,10 @@ Personal Statement: I wrote this code myself and did not take it from any other 
 	any instruction to include this feature, but it made sense and so I implemented it in my project.
 	You will see a test method that checks the working of this feature in my SpreadsheetTests file.
 
+# Software Practice
+
+	During this project, I utilized more code reuse and documentation practices.
+
 # Assignment Specific Topics
 	
 	Nothing for this assignment, as far as I know.

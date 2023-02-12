@@ -1,3 +1,12 @@
+/// Author:		Matthew Williams
+/// Partner:	None
+/// Date:		03 Feb 2023
+/// Course:		CS 3500 - Software Practice - University of Utah
+/// Github ID:	matthew - w56
+/// Repo:		https://github.com/uofu-cs3500-spring23/spreadsheet-Matthew-w56
+/// Solution:	Spreadsheet
+/// Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in Academic Work
+/// 
 /// <summary>
 /// 
 /// This file contains tests for the Spreadsheet.cs class.

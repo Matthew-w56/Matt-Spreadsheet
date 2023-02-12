@@ -1,4 +1,13 @@
-﻿/// <summary>
+﻿/// Author:		Matthew Williams
+/// Partner:	None
+/// Date:		05 Feb 2023
+/// Course:		CS 3500 - Software Practice - University of Utah
+/// Github ID:	matthew - w56
+/// Repo:		https://github.com/uofu-cs3500-spring23/spreadsheet-Matthew-w56
+/// Solution:	Spreadsheet
+/// Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in Academic Work
+/// 
+/// <summary>
 /// 
 /// This file contains the implementation of the AbstractSpreadsheet class.
 /// 
@@ -69,9 +78,6 @@ namespace SS {
 			VerifyCellName(name);
 			if (formula is null) throw new ArgumentNullException("Argument 'formula' cannot be null!");
 			StoreCellContents(name, formula);
-			foreach (string dependee in formula.GetVariables()) {
-				dg.AddDependency(dependee, name);
-			}
 			//Return all the cells that depend on this one - directly or indirectly
 			return new HashSet<string>(GetCellsToRecalculate(name));
 		}
@@ -99,11 +105,8 @@ namespace SS {
 		protected void StoreCellContents(string name, object contents) {
 			if (cells.ContainsKey(name)) {
 				if (contents is Formula) {
-					//Remove any dependencies related to the previous Formula
-					//(The SetCellContents method adds the new ones after this method runs)
-					foreach (string previousDependee in dg.GetDependees(name)) {
-						dg.RemoveDependency(previousDependee, name);
-					}
+					//Replace any dependencies related to the previous Formula
+					dg.ReplaceDependents(name, ((Formula)contents).GetVariables());
 				} else if (contents is string && contents.Equals("")) {
 					//Remove a cell from the list of non-empty cells if it's new content is just "".
 					cells.Remove(name);

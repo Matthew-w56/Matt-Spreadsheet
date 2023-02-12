@@ -1,0 +1,15 @@
+﻿No longer checks for nulls or references them in documentation
+
+Variable definition changed:
+	-Starts with 1+ letters
+	-Ends with 1+ numbers
+	-(implicit) nothing in between
+
+Normalize all formulas at the start
+
+Methods return ISet -> IList
+
+Added SpreadsheetReadWriteException (Spreadsheet IO exception)
+
+SetContentsOfCell (~line 415 before edits) and lower added
+
