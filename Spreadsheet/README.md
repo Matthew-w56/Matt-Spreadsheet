@@ -40,4 +40,7 @@ Personal Statement: I wrote this code myself and did not take it from any other 
 
 # References
 
-	No references used.
+	Regex101 - Used to make sure my altered Regex worked before plugging it in
+		URL: https://regex101.com/
+	Microsoft Documentation - Mainly used for XmlReader and XmlWriter methods.
+		URL: Multiple Pages Used

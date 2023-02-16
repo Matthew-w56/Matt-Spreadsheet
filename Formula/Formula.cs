@@ -303,7 +303,7 @@ namespace SpreadsheetUtilities {
 							return new FormulaError("Cannot divide by zero!");
 						}
 					}
-					catch (ArgumentException) { return new FormulaError($"No value exists for variable {token}!"); }
+					catch (ArgumentException) { return new FormulaError($"{token} does not contain a valid value!"); }
 
 				}
 			}

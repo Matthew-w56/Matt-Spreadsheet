@@ -21,7 +21,9 @@
 /// </summary>
 
 using SpreadsheetUtilities;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SS {
 
@@ -40,11 +42,23 @@ namespace SS {
 		//A dictionary of all cells that are not empty
 		Dictionary<string, Cell> cells;
 
-		/// <inheritdoc />
-		public Spreadsheet() {
+		public override bool Changed { get; protected set; }
+
+		public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version)
+			: base(isValid, normalize, version) {
 			dg = new();
 			cells = new();
+			IsValid = isValid;
+			Normalize = normalize;
+			Version = version;
+			Changed = false;
 		}
+
+		public Spreadsheet() 
+			: this( (s)=>true, (s)=>s, "default" ) {  }
+
+		public Spreadsheet(string filepath, Func<string, bool> isValid, Func<string, string> normalize, string version)
+			: this(isValid, normalize, version) { LoadSavedSpreadsheet(filepath); }
 
 		/// <inheritdoc />
 		public override object GetCellContents(string name) {
@@ -54,32 +68,52 @@ namespace SS {
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<string> GetNamesOfAllNonemptyCells() {
-			return new List<string> (cells.Keys);
-		}
-
-		/// <inheritdoc />
-		public override ISet<string> SetCellContents(string name, double number) {
-			VerifyCellName(name);
+		protected override IList<string> SetCellContents(string name, double number) {
 			StoreCellContents(name, number);
-			return new HashSet<string>(GetCellsToRecalculate(name));
+			return new List<string>(GetCellsToRecalculate(name));
 		}
 
 		/// <inheritdoc />
-		public override ISet<string> SetCellContents(string name, string text) {
-			VerifyCellName(name);
-			if (text is null) throw new ArgumentNullException("Argument 'text' cannot be null!");
+		protected override IList<string> SetCellContents(string name, string text) {
 			StoreCellContents(name, text);
-			return new HashSet<string>(GetCellsToRecalculate(name));
+			return new List<string>(GetCellsToRecalculate(name));
 		}
 
 		/// <inheritdoc />
-		public override ISet<string> SetCellContents(string name, Formula formula) {
-			VerifyCellName(name);
-			if (formula is null) throw new ArgumentNullException("Argument 'formula' cannot be null!");
+		protected override IList<string> SetCellContents(string name, Formula formula) {
 			StoreCellContents(name, formula);
 			//Return all the cells that depend on this one - directly or indirectly
-			return new HashSet<string>(GetCellsToRecalculate(name));
+			return new List<string>(GetCellsToRecalculate(name));
+		}
+
+		/// <inheritdoc/>
+		public override IList<string> SetContentsOfCell(string name, string content) {
+			//Verify cell name first so it doesn't have to be done in the separate SetCellContents methods
+			VerifyCellName(name);
+
+			//Now we figure out what kind of input it is
+			if (Double.TryParse(content, out double passedVal)) {
+				return SetCellContents(name, passedVal);
+
+			} else if (content.StartsWith("=")) {
+				//This throws any needed FormulaFormatExceptions
+				Formula f1 = new Formula(content.Substring(1), Normalize, IsValid);
+
+				//This checks for circular exceptions by seeing if this is already in the list of
+				//downstream dependents to any of it's to-be dependents
+				foreach (string newDep in f1.GetVariables()) {
+					if ( GetCellsToRecalculate(newDep).Contains(name) ) {
+						throw new CircularException();
+					}
+				}
+
+				//If we got this far, the Formula is valid and A-OK for us
+				return SetCellContents(name, f1);
+			
+			} else {
+				//We assume that it is a string at this point
+				return SetCellContents(name, content);
+			}
 		}
 
 		/// <inheritdoc />
@@ -103,6 +137,8 @@ namespace SS {
 		/// <param name="name"></param>
 		/// <param name="contents"></param>
 		protected void StoreCellContents(string name, object contents) {
+			Changed = true;
+
 			if (cells.ContainsKey(name)) {
 				if (contents is Formula) {
 					//Replace any dependencies related to the previous Formula
@@ -116,17 +152,118 @@ namespace SS {
 				cells[name].setContents(contents);
 			} else {
 				//Don't add the cell if it's new value will just be "".
-				if (contents is string && contents.Equals("")) return;
+				if (contents is string && contents.Equals("")) {
+					Changed = false;
+					return;
+				}
 				//Otherwise, add a new cell for the desired contents
 				cells.Add(name, new Cell(contents));
 			}
+		}
+
+		public override object GetCellValue(string name) {
+			VerifyCellName(name);
+			if (!cells.ContainsKey(name)) return "";
+			if (cells[name].getContents() is Formula) {
+				
+				return ((Formula) cells[name].getContents()).Evaluate(lookupDelegate);
+			} else {
+				return cells[name].getContents();
+			}
+		}
+
+		/// <inheritdoc />
+		public override IEnumerable<string> GetNamesOfAllNonemptyCells() {
+			return new List<string>(cells.Keys);
+		}
+
+		public override string GetSavedVersion(string filename) {
+			try {
+				using (XmlReader reader = XmlReader.Create(filename)) {
+
+					reader.ReadStartElement("Spreadsheet");
+					reader.ReadStartElement("version");
+					return reader.ReadString();
+
+				}
+			} 
+			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
+			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read that file!  {filename}"); }
+		}
+
+		public override void Save(string filename) {
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.IndentChars = "   ";
+			try {
+				using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
+					writer.WriteStartElement("Spreadsheet");
+
+					writer.WriteStartElement("version");
+					writer.WriteString(Version);
+					writer.WriteEndElement();
+
+					writer.WriteStartElement("Cells");
+
+					foreach (string cellName in cells.Keys) {
+						writer.WriteStartElement("cell");
+						writer.WriteAttributeString("name", cellName);
+						writer.WriteAttributeString("content", cells[cellName].getContents().ToString());
+						writer.WriteEndElement();
+					}
+
+					writer.WriteEndElement();
+					writer.WriteEndElement();
+				}
+			} catch (Exception) {  }
+			
+
+			//TODO: Set Changed to false after saving
+		}
+
+		//This is mine
+		protected void LoadSavedSpreadsheet(string filename) {
+			try {
+				using (XmlReader reader = XmlReader.Create(filename)) {
+
+					reader.ReadStartElement("Spreadsheet");
+					reader.ReadStartElement("version");
+					string fileV = reader.ReadString();
+					if (!fileV.Equals(Version)) throw new SpreadsheetReadWriteException(
+						$"File version ({fileV}) does not match up with given version ({Version})!"
+					);
+					reader.ReadEndElement();
+					reader.ReadStartElement("Cells");
+
+					//This loops through cell nodes until it hits the end of the file
+					while (reader.Read()) {
+						if (reader.Name.Equals("cell")) {
+							string name = "" + reader.GetAttribute("name");
+							string content = "" + reader.GetAttribute("content");
+							SetCellContents(name, content);
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
+			Changed = false;
 		}
 
 		protected void VerifyCellName(string name) {
 			//Name isn't null
 			if (name is null) throw new InvalidNameException();
 			//Name follows required syntax
-			if (!Regex.IsMatch(name, @"^[a-zA-Z_][a-zA-Z_0-9]*$")) throw new InvalidNameException();
+			if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$")) throw new InvalidNameException();
+			//Verify with passed in isValid delegate method
+			if (!IsValid(name)) throw new InvalidNameException();
+		}
+
+		//TODO: Comment this
+		protected double lookupDelegate(string name) {
+			if (Double.TryParse(GetCellValue(name).ToString(), out double outVal)) {
+				return outVal;
+			}
+			throw new ArgumentException();
 		}
 	}
 
