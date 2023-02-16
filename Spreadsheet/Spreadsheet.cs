@@ -1,6 +1,6 @@
 ﻿/// Author:		Matthew Williams
 /// Partner:	None
-/// Date:		05 Feb 2023
+/// Date:		05-16 Feb 2023
 /// Course:		CS 3500 - Software Practice - University of Utah
 /// Github ID:	matthew - w56
 /// Repo:		https://github.com/uofu-cs3500-spring23/spreadsheet-Matthew-w56
@@ -16,7 +16,6 @@
 /// 
 /// Author: Matthew Williams    February 2023
 /// 
-/// Marker: This is the AS5 branch.
 /// 
 /// </summary>
 
@@ -97,18 +96,22 @@ namespace SS {
 
 			} else if (content.StartsWith("=")) {
 				//This throws any needed FormulaFormatExceptions
-				Formula f1 = new Formula(content.Substring(1), Normalize, IsValid);
+				Formula f1 = new Formula(content[1..], Normalize, IsValid);
 
-				//This checks for circular exceptions by seeing if this is already in the list of
-				//downstream dependents to any of it's to-be dependents
-				foreach (string newDep in f1.GetVariables()) {
-					if ( GetCellsToRecalculate(newDep).Contains(name) ) {
-						throw new CircularException();
-					}
+				string oldContent = "";
+				//Make a backup of the current cell's contents so that we can revert in case of a circular dependency
+				if (cells.ContainsKey(name)) {
+					oldContent = "" + cells[name].getContents();
 				}
 
 				//If we got this far, the Formula is valid and A-OK for us
-				return SetCellContents(name, f1);
+				try {
+					return SetCellContents(name, f1);
+				} catch (CircularException) {
+					SetContentsOfCell(name, oldContent);
+					throw new CircularException();
+				}
+				
 			
 			} else {
 				//We assume that it is a string at this point
@@ -139,25 +142,19 @@ namespace SS {
 		protected void StoreCellContents(string name, object contents) {
 			Changed = true;
 
-			if (cells.ContainsKey(name)) {
-				if (contents is Formula) {
-					//Replace any dependencies related to the previous Formula
-					dg.ReplaceDependents(name, ((Formula)contents).GetVariables());
-				} else if (contents is string && contents.Equals("")) {
-					//Remove a cell from the list of non-empty cells if it's new content is just "".
-					cells.Remove(name);
-					return;
-				}
-				//Actually change the cell object's contents
+			if (!cells.ContainsKey(name)) { cells.Add(name, new Cell()); }
+
+			if (contents is string && contents.Equals("")) {
+				if (cells[name].getContents() is Formula) { dg.ReplaceDependees(name, new List<string>()); }
+				cells.Remove(name);
+			
+			} else if (contents is Formula) {
 				cells[name].setContents(contents);
+				dg.ReplaceDependees(name, ((Formula) contents).GetVariables());
+
 			} else {
-				//Don't add the cell if it's new value will just be "".
-				if (contents is string && contents.Equals("")) {
-					Changed = false;
-					return;
-				}
-				//Otherwise, add a new cell for the desired contents
-				cells.Add(name, new Cell(contents));
+				//Contents assumed to be a double or non-empty string
+				cells[name].setContents(contents);
 			}
 		}
 
@@ -186,7 +183,7 @@ namespace SS {
 					return reader.ReadString();
 
 				}
-			} 
+			}
 			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
 			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read that file!  {filename}"); }
 		}
@@ -240,18 +237,21 @@ namespace SS {
 						if (reader.Name.Equals("cell")) {
 							string name = "" + reader.GetAttribute("name");
 							string content = "" + reader.GetAttribute("content");
+							try { VerifyCellName(name); }
+							catch (InvalidNameException) { throw new SpreadsheetReadWriteException($"Spreadsheet contains an invalid cell name! ({name})"); }
 							SetCellContents(name, content);
 						}
 					}
 				}
 			}
 			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
+			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException($"Directory cannot be found!  {filename}"); }
+			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read from path {filename}!"); }
+
 			Changed = false;
 		}
 
 		protected void VerifyCellName(string name) {
-			//Name isn't null
-			if (name is null) throw new InvalidNameException();
 			//Name follows required syntax
 			if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$")) throw new InvalidNameException();
 			//Verify with passed in isValid delegate method
@@ -265,6 +265,7 @@ namespace SS {
 			}
 			throw new ArgumentException();
 		}
+
 	}
 
 	/// <summary>
@@ -280,12 +281,11 @@ namespace SS {
 		protected object content;
 
 		/// <summary>
-		/// Creates a cell object with some content in it
-		/// The content is a string, double, or Formula object
+		/// Creates a cell object without content.
+		/// To set content, use setContent() method.
 		/// </summary>
-		/// <param name="_content">Thing that is inside the cell</param>
-		public Cell(object _content) {
-			content = _content;
+		public Cell() {
+			content = 0;
 		}
 
 		/// <summary>

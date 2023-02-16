@@ -48,4 +48,4 @@ Abstraction
 	Better Time Breakout (Should have done this earlier)
 	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total
 	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:35		2:41
-	5 - Spreadsheet Saving	7			1:40		0:30		0:00		0:00		
+	5 - Spreadsheet Saving	7			1:40		1:45		0:31		0:00		
