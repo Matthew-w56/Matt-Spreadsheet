@@ -41,8 +41,18 @@ namespace SS {
 		//A dictionary of all cells that are not empty
 		Dictionary<string, Cell> cells;
 
+		/// <summary>
+		/// Tracks whether or not this Spreadsheet has been changed at all since either
+		/// being created, loading in from a file, or saving.
+		/// </summary>
 		public override bool Changed { get; protected set; }
 
+		/// <summary>
+		/// Creates a Spreadsheet with the given parameters.
+		/// </summary>
+		/// <param name="isValid">Method that validates a string to be used as a cell name</param>
+		/// <param name="normalize">Method that normalizes text in a formula</param>
+		/// <param name="version">String describing the version of this Spreadsheet</param>
 		public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version)
 			: base(isValid, normalize, version) {
 			dg = new();
@@ -53,9 +63,20 @@ namespace SS {
 			Changed = false;
 		}
 
+		/// <summary>
+		/// Creates a blank spreadsheet that imposes no extra requirements for
+		/// cell names and does not normalize formula input.  Version is "default".
+		/// </summary>
 		public Spreadsheet() 
 			: this( (s)=>true, (s)=>s, "default" ) {  }
 
+		/// <summary>
+		/// Loads a Spreadsheet from a file with the given parameters.
+		/// </summary>
+		/// <param name="filepath">The string file-path to the saved spreadsheet</param>
+		/// <param name="isValid">Method that validates a string to be used as a cell name</param>
+		/// <param name="normalize">Method that normalizes text in a formula</param>
+		/// <param name="version">String describing the version of this Spreadsheet</param>
 		public Spreadsheet(string filepath, Func<string, bool> isValid, Func<string, string> normalize, string version)
 			: this(isValid, normalize, version) { LoadSavedSpreadsheet(filepath); }
 
@@ -85,7 +106,7 @@ namespace SS {
 			return new List<string>(GetCellsToRecalculate(name));
 		}
 
-		/// <inheritdoc/>
+		/// <inheritdoc />
 		public override IList<string> SetContentsOfCell(string name, string content) {
 			//Verify cell name first so it doesn't have to be done in the separate SetCellContents methods
 			VerifyCellName(name);
@@ -158,6 +179,7 @@ namespace SS {
 			}
 		}
 
+		/// <inheritdoc />
 		public override object GetCellValue(string name) {
 			VerifyCellName(name);
 			if (!cells.ContainsKey(name)) return "";
@@ -174,6 +196,7 @@ namespace SS {
 			return new List<string>(cells.Keys);
 		}
 
+		/// <inheritdoc />
 		public override string GetSavedVersion(string filename) {
 			try {
 				using (XmlReader reader = XmlReader.Create(filename)) {
@@ -188,6 +211,7 @@ namespace SS {
 			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read that file!  {filename}"); }
 		}
 
+		/// <inheritdoc />
 		public override void Save(string filename) {
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
@@ -213,12 +237,16 @@ namespace SS {
 					writer.WriteEndElement();
 				}
 			} catch (Exception) {  }
-			
 
-			//TODO: Set Changed to false after saving
+			Changed = false;
 		}
 
-		//This is mine
+		/// <summary>
+		/// Reads the given file and copies all the data in to this Spreadsheet object.  Called
+		/// in the constructor and is used only the once.
+		/// </summary>
+		/// <param name="filename">String decribing the location fo the saved spreadsheet</param>
+		/// <exception cref="SpreadsheetReadWriteException">Thrown when file can't be found, or layout is inconsistent</exception>
 		protected void LoadSavedSpreadsheet(string filename) {
 			try {
 				using (XmlReader reader = XmlReader.Create(filename)) {
@@ -251,6 +279,12 @@ namespace SS {
 			Changed = false;
 		}
 
+		/// <summary>
+		/// Makes sure the given name passes internal requirements for a cell name, and
+		/// then runs it against the given IsValid method, passed in during construction.
+		/// </summary>
+		/// <param name="name">String to be examined</param>
+		/// <exception cref="InvalidNameException">Name is not valid</exception>
 		protected void VerifyCellName(string name) {
 			//Name follows required syntax
 			if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$")) throw new InvalidNameException();
@@ -258,7 +292,13 @@ namespace SS {
 			if (!IsValid(name)) throw new InvalidNameException();
 		}
 
-		//TODO: Comment this
+		/// <summary>
+		/// Helper method that attempts to get a value from a cell, and throws an
+		/// Argument Exception if it can't (Cell is empty or contains a string)
+		/// </summary>
+		/// <param name="name">Cell name</param>
+		/// <returns>The value of that cell</returns>
+		/// <exception cref="ArgumentException">Cell is empty, or contains a string</exception>
 		protected double lookupDelegate(string name) {
 			if (Double.TryParse(GetCellValue(name).ToString(), out double outVal)) {
 				return outVal;

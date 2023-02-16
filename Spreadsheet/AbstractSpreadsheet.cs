@@ -28,7 +28,13 @@
 //                (Fall 2019)         SetCellContents signatures changed to return IList
 //    Version 1.9 (Jim de St. Germain) Updated documentation
 //    Version 1.91 (Jim de St. Germain) Removed Null requirement checking (C# supports non-nullables!)
-//                            
+//
+
+/// <summary>
+/// This is the Abstract class that Spreadsheet.cs implements.
+/// This comment is here because I've lost points in the past for missing header
+/// comments and I wanted to be certain I put one EVERYWHERE.
+/// </summary>
 
 
 using System;
