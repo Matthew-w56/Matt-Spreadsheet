@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluator", "Formula
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{92424E34-C4F0-49CF-B369-AC2DBC94C854}"
 	ProjectSection(SolutionItems) = preProject
+		Whiteboard\architecture.jpg = Whiteboard\architecture.jpg
+		Whiteboard\dependency_graph_whiteboard.jpg = Whiteboard\dependency_graph_whiteboard.jpg
+		Whiteboard\formula_whiteboard.jpg = Whiteboard\formula_whiteboard.jpg
 		README.md = README.md
+		Whiteboard\spreadsheet_whiteboard.jpg = Whiteboard\spreadsheet_whiteboard.jpg
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluatorTester", "FormulaEvaluatorTester\FormulaEvaluatorTester.csproj", "{A5ADD6B0-A978-401F-A102-6586C980D25B}"
