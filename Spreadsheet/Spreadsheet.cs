@@ -23,6 +23,7 @@ using SpreadsheetUtilities;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace SS {
 
@@ -183,12 +184,7 @@ namespace SS {
 		public override object GetCellValue(string name) {
 			VerifyCellName(name);
 			if (!cells.ContainsKey(name)) return "";
-			if (cells[name].getContents() is Formula) {
-				
-				return ((Formula) cells[name].getContents()).Evaluate(lookupDelegate);
-			} else {
-				return cells[name].getContents();
-			}
+			return cells[name].getValue(lookupDelegate);
 		}
 
 		/// <inheritdoc />
@@ -319,6 +315,7 @@ namespace SS {
 	internal class Cell {
 
 		protected object content;
+		protected object value;
 
 		/// <summary>
 		/// Creates a cell object without content.
@@ -326,6 +323,7 @@ namespace SS {
 		/// </summary>
 		public Cell() {
 			content = 0;
+			value = "";
 		}
 
 		/// <summary>
@@ -336,12 +334,29 @@ namespace SS {
 			return content;
 		}
 
+		public object getValue(Func<string, double> lookupDelegate) {
+			if (!value.Equals("")) return value;
+			else {
+				updateValue(lookupDelegate);
+				return value;
+			}
+		}
+
+		public void updateValue(Func<string, double> lookupDelegate) {
+			if (content is Formula) {
+				value = ((Formula) content).Evaluate(lookupDelegate);
+			} else {
+				value = content;
+			}
+		}
+
 		/// <summary>
 		/// Sets the contents of the cell to the given input
 		/// </summary>
 		/// <param name="contents">New content of the cell</param>
 		public void setContents(object contents) {
 			content = contents;
+			value = "";
 		}
 	}
 }
