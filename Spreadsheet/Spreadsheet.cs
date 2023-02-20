@@ -114,7 +114,7 @@ namespace SS {
 
 			//Now we figure out what kind of input it is
 			if (Double.TryParse(content, out double passedVal)) {
-				return SetCellContents(name, passedVal);
+				return UpdateAndReturnAffectedCells(SetCellContents(name, passedVal));
 
 			} else if (content.StartsWith("=")) {
 				//This throws any needed FormulaFormatExceptions
@@ -128,17 +128,24 @@ namespace SS {
 
 				//If we got this far, the Formula is valid and A-OK for us
 				try {
-					return SetCellContents(name, f1);
+					return UpdateAndReturnAffectedCells(SetCellContents(name, f1));
 				} catch (CircularException) {
-					SetContentsOfCell(name, oldContent);
+					UpdateAndReturnAffectedCells(SetContentsOfCell(name, oldContent));
 					throw new CircularException();
 				}
 				
 			
 			} else {
 				//We assume that it is a string at this point
-				return SetCellContents(name, content);
+				return UpdateAndReturnAffectedCells(SetCellContents(name, content));
 			}
+		}
+
+		protected IList<string> UpdateAndReturnAffectedCells(IList<string> input_list) {
+			foreach (string cell in input_list) {
+				cells[cell].updateValue(lookupDelegate);
+			}
+			return input_list;
 		}
 
 		/// <inheritdoc />
@@ -343,8 +350,8 @@ namespace SS {
 		}
 
 		public void updateValue(Func<string, double> lookupDelegate) {
-			if (content is Formula) {
-				value = ((Formula) content).Evaluate(lookupDelegate);
+			if (content is Formula formula) {
+				value = formula.Evaluate(lookupDelegate);
 			} else {
 				value = content;
 			}
