@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace SS {
 
@@ -40,7 +41,7 @@ namespace SS {
 		//The dependency graph for this sheet
 		private DependencyGraph dg;
 		//A dictionary of all cells that are not empty
-		Dictionary<string, Cell> cells;
+		private Dictionary<string, Cell> cells;
 
 		/// <summary>
 		/// Tracks whether or not this Spreadsheet has been changed at all since either
@@ -68,8 +69,8 @@ namespace SS {
 		/// Creates a blank spreadsheet that imposes no extra requirements for
 		/// cell names and does not normalize formula input.  Version is "default".
 		/// </summary>
-		public Spreadsheet() 
-			: this( (s)=>true, (s)=>s, "default" ) {  }
+		public Spreadsheet()
+			: this((s) => true, (s) => s, "default") { }
 
 		/// <summary>
 		/// Loads a Spreadsheet from a file with the given parameters.
@@ -83,7 +84,7 @@ namespace SS {
 
 		/// <inheritdoc />
 		public override object GetCellContents(string name) {
-			VerifyCellName(name);
+			name = VerifyCellName(name);
 			if (cells.ContainsKey(name)) return cells[name].getContents();
 			else return "";
 		}
@@ -103,14 +104,13 @@ namespace SS {
 		/// <inheritdoc />
 		protected override IList<string> SetCellContents(string name, Formula formula) {
 			StoreCellContents(name, formula);
-			//Return all the cells that depend on this one - directly or indirectly
 			return new List<string>(GetCellsToRecalculate(name));
 		}
 
 		/// <inheritdoc />
 		public override IList<string> SetContentsOfCell(string name, string content) {
 			//Verify cell name first so it doesn't have to be done in the separate SetCellContents methods
-			VerifyCellName(name);
+			name = VerifyCellName(name);
 
 			//Now we figure out what kind of input it is
 			if (Double.TryParse(content, out double passedVal)) {
@@ -133,8 +133,7 @@ namespace SS {
 					UpdateAndReturnAffectedCells(SetContentsOfCell(name, oldContent));
 					throw new CircularException();
 				}
-				
-			
+
 			} else {
 				//We assume that it is a string at this point
 				return UpdateAndReturnAffectedCells(SetCellContents(name, content));
@@ -143,14 +142,15 @@ namespace SS {
 
 		protected IList<string> UpdateAndReturnAffectedCells(IList<string> input_list) {
 			foreach (string cell in input_list) {
-				cells[cell].updateValue(lookupDelegate);
+				if (cells.ContainsKey(cell))
+					cells[cell].updateValue(lookupDelegate);
 			}
 			return input_list;
 		}
 
 		/// <inheritdoc />
 		protected override IEnumerable<string> GetDirectDependents(string name) {
-			VerifyCellName(name);
+			name = VerifyCellName(name);
 			return dg.GetDependents(name);
 		}
 
@@ -173,23 +173,25 @@ namespace SS {
 
 			if (!cells.ContainsKey(name)) { cells.Add(name, new Cell()); }
 
-			if (contents is string && contents.Equals("")) {
-				if (cells[name].getContents() is Formula) { dg.ReplaceDependees(name, new List<string>()); }
-				cells.Remove(name);
-			
-			} else if (contents is Formula) {
+			if (contents is Formula) {
 				cells[name].setContents(contents);
 				dg.ReplaceDependees(name, ((Formula) contents).GetVariables());
 
 			} else {
-				//Contents assumed to be a double or non-empty string
-				cells[name].setContents(contents);
+				if (cells[name].getContents() is Formula) { dg.ReplaceDependees(name, new List<string>()); }
+
+				if (contents is string && contents.Equals("")) {
+					cells.Remove(name);
+				} else {
+					//Contents assumed to be a double or non-empty string
+					cells[name].setContents(contents);
+				}
 			}
 		}
 
 		/// <inheritdoc />
 		public override object GetCellValue(string name) {
-			VerifyCellName(name);
+			name = VerifyCellName(name);
 			if (!cells.ContainsKey(name)) return "";
 			return cells[name].getValue(lookupDelegate);
 		}
@@ -203,15 +205,10 @@ namespace SS {
 		public override string GetSavedVersion(string filename) {
 			try {
 				using (XmlReader reader = XmlReader.Create(filename)) {
-
-					reader.ReadStartElement("Spreadsheet");
-					reader.ReadStartElement("version");
-					return reader.ReadString();
-
+					reader.ReadToFollowing("spreadsheet");
+					return reader.GetAttribute("version") + "";
 				}
-			}
-			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
-			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read that file!  {filename}"); }
+			} catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); } catch (Exception e) { throw new SpreadsheetReadWriteException($"Cannot read that file!  {filename} \n>{e}"); }
 		}
 
 		/// <inheritdoc />
@@ -221,27 +218,31 @@ namespace SS {
 			settings.IndentChars = "   ";
 			try {
 				using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
-					writer.WriteStartElement("Spreadsheet");
 
-					writer.WriteStartElement("version");
-					writer.WriteString(Version);
-					writer.WriteEndElement();
+					writer.WriteStartDocument();
+					writer.WriteStartElement("spreadsheet");
+					writer.WriteAttributeString("version", Version);
 
-					writer.WriteStartElement("Cells");
-
+					//Cells Portion
 					foreach (string cellName in cells.Keys) {
 						writer.WriteStartElement("cell");
-						writer.WriteAttributeString("name", cellName);
-						writer.WriteAttributeString("content", cells[cellName].getContents().ToString());
+						writer.WriteElementString("name", cellName);
+						object contents = cells[cellName].getContents();
+						string contentString = contents.ToString() + "";
+						if (contents is Formula) { contentString = "=" + contentString; }
+						writer.WriteElementString("contents", contentString);
 						writer.WriteEndElement();
 					}
 
-					writer.WriteEndElement();
-					writer.WriteEndElement();
-				}
-			} catch (Exception) {  }
 
-			Changed = false;
+					writer.WriteEndElement();   //Spreadsheet
+					writer.WriteEndDocument();
+				}
+			}
+			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException("Cannot find that directory!"); }
+			catch (Exception) { throw new SpreadsheetReadWriteException("Can't save that file!"); }
+
+			Changed = false;//TODO: Might not need this
 		}
 
 		/// <summary>
@@ -254,30 +255,47 @@ namespace SS {
 			try {
 				using (XmlReader reader = XmlReader.Create(filename)) {
 
-					reader.ReadStartElement("Spreadsheet");
-					reader.ReadStartElement("version");
-					string fileV = reader.ReadString();
-					if (!fileV.Equals(Version)) throw new SpreadsheetReadWriteException(
-						$"File version ({fileV}) does not match up with given version ({Version})!"
-					);
-					reader.ReadEndElement();
-					reader.ReadStartElement("Cells");
+					string name = "";
+					string contents = "";
 
-					//This loops through cell nodes until it hits the end of the file
 					while (reader.Read()) {
-						if (reader.Name.Equals("cell")) {
-							string name = "" + reader.GetAttribute("name");
-							string content = "" + reader.GetAttribute("content");
-							try { VerifyCellName(name); }
-							catch (InvalidNameException) { throw new SpreadsheetReadWriteException($"Spreadsheet contains an invalid cell name! ({name})"); }
-							SetCellContents(name, content);
+
+						switch (reader.NodeType) {
+							case XmlNodeType.Element:
+								switch (reader.Name) {
+									case "spreadsheet":
+										string fileV = reader.GetAttribute("version") + "";
+										if (!fileV.Equals(Version)) throw new SpreadsheetReadWriteException(
+											$"File version ({fileV}) does not match up with given version ({Version})!"
+										);
+										break;
+
+									case "name":
+										reader.Read();
+										name = reader.Value;
+										break;
+
+									case "contents":
+										reader.Read();
+										contents = reader.Value;
+										break;
+
+									default:
+										break;
+								}
+								break;
+							case XmlNodeType.EndElement:
+								if (!name.Equals("") && !contents.Equals("")) {
+									SetContentsOfCell(name, contents);
+								}
+								break;
+							default:
+								break;
 						}
 					}
+
 				}
-			}
-			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
-			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException($"Directory cannot be found!  {filename}"); }
-			catch (Exception) { throw new SpreadsheetReadWriteException($"Cannot read from path {filename}!"); }
+			} catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); } catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException($"Directory cannot be found!  {filename}"); } catch (Exception e) { throw new SpreadsheetReadWriteException($"Cannot read from path {filename}!  {e}"); }
 
 			Changed = false;
 		}
@@ -288,11 +306,12 @@ namespace SS {
 		/// </summary>
 		/// <param name="name">String to be examined</param>
 		/// <exception cref="InvalidNameException">Name is not valid</exception>
-		protected void VerifyCellName(string name) {
+		protected string VerifyCellName(string name) {
 			//Name follows required syntax
 			if (!Regex.IsMatch(name, @"^[a-zA-Z]+[0-9]+$")) throw new InvalidNameException();
 			//Verify with passed in isValid delegate method
 			if (!IsValid(name)) throw new InvalidNameException();
+			return Normalize(name);
 		}
 
 		/// <summary>
@@ -341,17 +360,33 @@ namespace SS {
 			return content;
 		}
 
+		/// <summary>
+		/// Returns the last value evaluated for this cell.
+		/// 
+		/// If no value has been evaluated yet, it evaluates it and then
+		/// saves it for later.  To update the value, use Cell.updateValue(lookup);
+		/// </summary>
+		/// <param name="lookupDelegate">Lookup delegate to pass to any possible Formula content</param>
+		/// <returns>The value evaluated from this cell's content</returns>
 		public object getValue(Func<string, double> lookupDelegate) {
 			if (!value.Equals("")) return value;
 			else {
 				updateValue(lookupDelegate);
+				//TODO: The doc comment on this method
 				return value;
 			}
 		}
 
+		/// <summary>
+		/// Causes the value of this cell to be reevaluated and saved
+		/// for later recall.
+		/// </summary>
+		/// <param name="lookupDelegate">Lookup delegate to pass to any possible Formula content</param>
 		public void updateValue(Func<string, double> lookupDelegate) {
 			if (content is Formula formula) {
 				value = formula.Evaluate(lookupDelegate);
+			} else if (Double.TryParse(content.ToString(), out double numVal)) {
+				value = numVal;
 			} else {
 				value = content;
 			}
