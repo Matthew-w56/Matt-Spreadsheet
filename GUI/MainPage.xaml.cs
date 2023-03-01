@@ -21,6 +21,8 @@ namespace GUI {
 
 		private readonly Color LEFT_LABEL_COLOR = Color.FromRgb(225, 225, 227);
 		private readonly Color TOP_LABEL_COLOR = Color.FromRgb(200, 200, 202);
+		private readonly Color HIGHLIGHT_COLOR = Color.FromRgb(255, 255, 150);
+		private readonly Color CELL_BG_COLOR = Color.FromRgb(255, 255, 255);
 
 		private readonly static string CURRENT_VERSION = "six";
 
@@ -47,6 +49,8 @@ namespace GUI {
 
 			SelectedCellContent.TextChanged += SyncCellToInfoBar;
 			SelectedCellContent.Completed += HandleInfoBarContentCompleted;
+
+			HandleNewCellFocus(CellStructure[1]["A"]);
 		}
 
 		protected async void FileMenuNew(object sender, EventArgs e) {
@@ -193,16 +197,18 @@ namespace GUI {
 
 			HandleUnfocus(currentFocusedCell);
 			currentFocusedCell = cell;
+			cell.BackgroundColor = HIGHLIGHT_COLOR;
 			PingTopInfoBar(cell);
 			//Change cell text to contents, rather than value
-			cell.Text = getCorrectedContents(cell);
+			cell.Text = getCorrectedContents(cell.GetName());
 		}
 
 		protected void HandleUnfocus(CellObject cell) {
 			if (cell is not null) {
+				cell.BackgroundColor = CELL_BG_COLOR;
 				string name = cell.GetName();
 				//Don't try to store contents (and therefore set Changed to true) if cell is blank
-				if (ss.GetCellContents(name).Equals("")) return;
+				if (ss.GetCellContents(name).Equals("") && cell.Text.Equals("")) return;
 
 				StoreCellContents(cell);
 				PingCellValue(name, cell);
@@ -219,7 +225,7 @@ namespace GUI {
 			string name = cell.GetName();
 			SelectedCellName.Text = name;
 			SelectedCellValue.Text = ss.GetCellValue(name).ToString();
-			SelectedCellContent.Text = getCorrectedContents(cell);
+			SelectedCellContent.Text = getCorrectedContents(name);
 		}
 
 		protected void PingCellValue(string name, CellObject cell) {
@@ -228,21 +234,28 @@ namespace GUI {
 			else cell.Text = val.ToString();
 		}
 
-		protected string getCorrectedContents(CellObject cell) {
-			object contents = ss.GetCellContents(cell.GetName());
+		protected string getCorrectedContents(string cellName) {
+			object contents = ss.GetCellContents(cellName);
 			if (contents is Formula) return "=" + contents.ToString();
 			else return contents.ToString();
 		}
 
-		protected void StoreCellContents(CellObject cell) {
+		protected async void StoreCellContents(CellObject cell) {
 			string name = cell.GetName();
-			IList<string> updatesToDo = ss.SetContentsOfCell(name, cell.Text);
-			UpdateCellVein(updatesToDo);
+			try {
+				IList<string> updatesToDo = ss.SetContentsOfCell(name, cell.Text);
+				UpdateCellVein(updatesToDo);
+			}
+			catch (FormulaFormatException f_e) {
+				await DisplayAlert("Formula Exception!", f_e.Message, "OK");
+			}
 		}
 
 		protected void UpdateCellVein(IList<string> cells) {
 			foreach (string cellName in cells) {
-				//TODO: Need to know how to reference cells for this
+				GetRowAndColOf(cellName, out string col, out int row);
+				CellObject cell = CellStructure[row][col];
+				cell.Text = ss.GetCellValue(cellName).ToString();
 			}
 		}
 

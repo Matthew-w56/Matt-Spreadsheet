@@ -30,19 +30,19 @@
 					   HorizontalTextAlignment="Center"/>
 				<Border
 					StrokeThickness="1"
-					WidthRequest="200">
+					WidthRequest="350">
 					<HorizontalStackLayout>
-						<Border StrokeThickness="1">
-							<Label x:Name="SelectedCellValue" Text="null" WidthRequest="100" MinimumWidthRequest="100" Padding="5"/>
+						<Border StrokeThickness="1" WidthRequest="125" HeightRequest="40">
+							<Label x:Name="SelectedCellValue" Text="null" WidthRequest="125" MinimumWidthRequest="125" Padding="5"/>
 						</Border>
 						<Border StrokeThickness="1">
-							<Entry x:Name="SelectedCellContent" Text="null" WidthRequest="100" MinimumWidthRequest="100"/>
+							<Entry x:Name="SelectedCellContent" Text="null" WidthRequest="225" MinimumWidthRequest="225"/>
 						</Border>
 						
 						
 					</HorizontalStackLayout>
 				</Border>
-				<Label x:Name="TopBarSpacer" Text="  " WidthRequest="160" />
+				<Label x:Name="TopBarSpacer" Text="  " WidthRequest="100" />
 				<Label x:Name="SpreadsheetFileName" Text="New File"
 						Padding="8"
 					   FontSize="Small"
