@@ -1,6 +1,7 @@
 ﻿using Microsoft.Maui.Graphics;
 using SpreadsheetUtilities;
 using SS;
+using System.Diagnostics;
 using System.Xml.Linq;
 
 //TODO: Change content viewer on top bar into entry
@@ -33,6 +34,7 @@ namespace GUI {
 		private CellObject currentFocusedCell = null;
 		private bool isSheetFromFile = false;
 		private string currentFilePath = "";
+		private string currentFileName = "";
 
 		//Default Spreadsheet is a new one
 		private AbstractSpreadsheet ss = new Spreadsheet((s) => true, (s) => s.ToUpper(), CURRENT_VERSION);
@@ -73,39 +75,79 @@ namespace GUI {
 					col.Value.Text = "";
 				}
 			}
-			//TODO: Update info bar at top to be blank
-			//TODO: Also update currentFocusedCell
+
+			HandleNewCellFocus(CellStructure[1]["A"]);
+			isSheetFromFile = false;
+			currentFilePath = "";
+			SpreadsheetFileName.Text = "New File";
+			SyncInfoBarToCellTotal(CellStructure[1]["A"]);
 		}
 
 		protected async void FileMenuSave(object sender, EventArgs e) {
-			//TODO: Professor will give us a method for this on Thursday
-			//FileResult? fileDest = await FilePicker.Default.PickAsync();
 
-			string fileDest = await DisplayPromptAsync("File Name", "Where should the file be saved?  Full path please. (File extension: .sprd");
+			string filePath = currentFilePath;
+			string fileName = currentFileName;
+
+			if (!isSheetFromFile) {
+				fileName = await DisplayPromptAsync("File Name", "What would you like to call the file (without the file type ending)", "Save") + ".sprd";
+				string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+				filePath = desktopPath + "\\" + fileName;
+			}
 
 			try {
-				ss.Save(fileDest);
+				ss.Save(filePath);
+
+				isSheetFromFile = true;
+				currentFilePath = filePath;
+				currentFileName = fileName;
+				SpreadsheetFileName.Text = fileName;
 			} catch (SpreadsheetReadWriteException _e) {
 				await DisplayAlert("A Problem Occurred!", _e.Message, "OK");
 			}
+			
 		}
 
 		protected async void FileMenuOpenAsync(object sender, EventArgs e) {
+			bool shouldContinue = true;
+
+			if (ss.Changed) {
+				shouldContinue =
+					await DisplayAlert(
+						"Unsaved Work",
+						"The current Spreadsheet has changes that have not been saved yet.  Continue without saving?",
+						"Continue", "Cancel");
+			}
+
+			if (!shouldContinue) return;
+
+
 			FileResult? file = await FilePicker.Default.PickAsync();
+
 			if (file is not null) {
 				try {
-					ss = new Spreadsheet(file.FullPath, (s) => true, (s) => s.ToUpper(), CURRENT_VERSION);
 
-					for (int i = 1; i <= CellStructure.Count; i++) {
-						foreach (var col in CellStructure[i]) {
-							col.Value.Text = "";
-						}
+					AbstractSpreadsheet testSS = new Spreadsheet(file.FullPath, (s) => true, (s) => s.ToUpper(), CURRENT_VERSION);
+
+					//If we haven't failed yet, we're in business
+					foreach (string name in ss.GetNamesOfAllNonemptyCells()) {
+						GetRowAndColOf(name, out string col, out int row);
+						CellStructure[row][col].Text = "";
 					}
+
+					ss = testSS;
+					HandleUnfocus(currentFocusedCell);
+					currentFocusedCell = null;
+
 					foreach (string name in ss.GetNamesOfAllNonemptyCells()) {
 						GetRowAndColOf(name, out string col, out int row);
 						PingCellValue(name, CellStructure[row][col]);
 					}
 
+					isSheetFromFile = true;
+					currentFileName = file.FileName;
+					currentFilePath = file.FullPath;
+					SpreadsheetFileName.Text = currentFileName;
+					SyncInfoBarToCellTotal(CellStructure[1]["A"]);
 				}
 				catch (SpreadsheetReadWriteException _e) {
 					await DisplayAlert("File Error!", _e.Message, "OK");
@@ -174,7 +216,7 @@ namespace GUI {
 					Spacing = 0
 				};
 				foreach (char c in TOP_LABELS) {
-					CellObject cell = new CellObject(c.ToString(), r, HandleNewCellFocus, HandleNewCellContentSet, SyncInfoBarToCell);
+					CellObject cell = new CellObject(c.ToString(), r, HandleNewCellFocus, HandleNewCellContentSet, SyncInfoBarToCellContent);
 
 					CellStructure[r].Add(c.ToString(), cell);
 
@@ -200,7 +242,7 @@ namespace GUI {
 			cell.BackgroundColor = HIGHLIGHT_COLOR;
 			PingTopInfoBar(cell);
 			//Change cell text to contents, rather than value
-			cell.Text = getCorrectedContents(cell.GetName());
+			cell.Text = GetCorrectedContents(cell.GetName());
 		}
 
 		protected void HandleUnfocus(CellObject cell) {
@@ -223,9 +265,7 @@ namespace GUI {
 
 		protected void PingTopInfoBar(CellObject cell) {
 			string name = cell.GetName();
-			SelectedCellName.Text = name;
-			SelectedCellValue.Text = ss.GetCellValue(name).ToString();
-			SelectedCellContent.Text = getCorrectedContents(name);
+			SyncInfoBarToCellTotal(cell);
 		}
 
 		protected void PingCellValue(string name, CellObject cell) {
@@ -234,7 +274,7 @@ namespace GUI {
 			else cell.Text = val.ToString();
 		}
 
-		protected string getCorrectedContents(string cellName) {
+		protected string GetCorrectedContents(string cellName) {
 			object contents = ss.GetCellContents(cellName);
 			if (contents is Formula) return "=" + contents.ToString();
 			else return contents.ToString();
@@ -265,11 +305,19 @@ namespace GUI {
 		}
 
 		protected void SyncCellToInfoBar(object sender, EventArgs e) {
+			if (currentFocusedCell is null) return;
 			currentFocusedCell.Text = SelectedCellContent.Text;
 		}
 
-		protected void SyncInfoBarToCell(CellObject cell) {
+		protected void SyncInfoBarToCellContent(CellObject cell) {
 			SelectedCellContent.Text = cell.Text;
+		}
+
+		protected void SyncInfoBarToCellTotal(CellObject cell) {
+			string name = cell.GetName();
+			SelectedCellContent.Text = GetCorrectedContents(name);
+			SelectedCellValue.Text = ss.GetCellValue(name).ToString();
+			SelectedCellName.Text = name;
 		}
 
 		protected void HandleInfoBarContentCompleted(object sender, EventArgs e) {

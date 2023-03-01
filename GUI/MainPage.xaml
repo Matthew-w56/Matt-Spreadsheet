@@ -47,7 +47,7 @@
 						Padding="8"
 					   FontSize="Small"
 					   VerticalTextAlignment="Center"
-					   Margin="10"/>
+					   Margin="2"/>
 			</HorizontalStackLayout>
 		</Border>
 
