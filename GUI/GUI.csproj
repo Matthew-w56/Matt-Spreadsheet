@@ -10,10 +10,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>GUI</ApplicationTitle>
+		<ApplicationTitle>Spreadsheet - Matthew Williams</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.gui</ApplicationId>
+		<ApplicationId>stu.matt.gui</ApplicationId>
 		<ApplicationIdGuid>784e5285-28d5-4800-a15f-bb3a57ba9311</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -44,6 +44,10 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Spreadsheet\Spreadsheet.csproj" />
 	</ItemGroup>
 
 </Project>

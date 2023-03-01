@@ -46,7 +46,7 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	3 - Formula Class		4			4:45		Spent 30 minutes adjusting Visual Studio settings
 	
 	Better Time Breakout (Should have done this earlier)
-	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total
+	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total		Notes
 	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:35		2:41
 	5 - Spreadsheet Saving	7			1:40		1:45		0:31		0:25		4:21
-	6 - MAUI GUI			9			2:00		0:00		0:00		0:00		
+	6 - MAUI GUI			9			4:17		0:23		0:00		0:00					Spend 1:15 making it look nice

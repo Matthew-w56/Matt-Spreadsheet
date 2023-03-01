@@ -240,7 +240,7 @@ namespace SS {
 				}
 			}
 			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException("Cannot find that directory!"); }
-			catch (Exception) { throw new SpreadsheetReadWriteException("Can't save that file!"); }
+			catch (Exception e) { throw new SpreadsheetReadWriteException("Can't save that file!"); }
 
 			Changed = false;//TODO: Might not need this
 		}
@@ -295,7 +295,10 @@ namespace SS {
 					}
 
 				}
-			} catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); } catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException($"Directory cannot be found!  {filename}"); } catch (Exception e) { throw new SpreadsheetReadWriteException($"Cannot read from path {filename}!  {e}"); }
+			}
+			catch (FileNotFoundException) { throw new SpreadsheetReadWriteException($"File cannot be found!  {filename}"); }
+			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException($"Directory cannot be found!  {filename}"); }
+			catch (Exception e) { throw new SpreadsheetReadWriteException($"Cannot read from path {filename}!  {e}"); }
 
 			Changed = false;
 		}
