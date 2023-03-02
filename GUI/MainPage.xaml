@@ -69,13 +69,13 @@
 		</Border>
 
 		<!-- the column headers: A, B, C, ... -->
-		<HorizontalStackLayout x:Name="TopLabels"/>
+		<HorizontalStackLayout x:Name="TopLabels" HorizontalOptions="Start"/>
 
 		<!-- the Grid of Spreadsheet GUI Cells -->
 		<ScrollView
                     x:Name="Table"
-                    Orientation="Both"
-                    HorizontalOptions="FillAndExpand"
+                    Orientation="Vertical"
+					VerticalOptions="FillAndExpand"
                     HorizontalScrollBarVisibility="Always"
 					VerticalScrollBarVisibility="Always">
 			<HorizontalStackLayout>

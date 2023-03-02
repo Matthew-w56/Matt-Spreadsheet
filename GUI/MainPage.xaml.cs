@@ -34,8 +34,9 @@ namespace GUI {
 	public partial class MainPage: ContentPage {
 
 		//Constants that control the grid
-		private readonly char[] TOP_LABELS = "ABCDEFGHIJKLM".ToCharArray();
-		private readonly int ROW_COUNT = 10;
+		//ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		private readonly char[] TOP_LABELS = "ABC".ToCharArray();
+		private readonly int ROW_COUNT = 60;
 		private readonly int GRID_CELL_WIDTH = 90;
 		private readonly int GRID_CELL_HEIGHT = 30;
 		private readonly int GRID_LEFT_LABEL_WIDTH = 40;
@@ -78,6 +79,7 @@ namespace GUI {
 			Table.HeightRequest = GRID_CELL_HEIGHT * ROW_COUNT;
 			TopLabels.WidthRequest = GRID_CELL_WIDTH * TOP_LABELS.Length + GRID_LEFT_LABEL_WIDTH;
 			TopLabels.BackgroundColor = TOP_LABEL_COLOR;
+			TopLabels.TranslationX = -(TopLabels.X);
 			LeftLabels.BackgroundColor = LEFT_LABEL_COLOR;
 
 			SelectedCellContent.TextChanged += SyncCellToInfoBar;
