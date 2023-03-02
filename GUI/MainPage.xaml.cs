@@ -133,6 +133,7 @@ namespace GUI {
 						GetRowAndColOf(name, out string col, out int row);
 						CellStructure[row][col].Text = "";
 					}
+					currentFocusedCell.Text = "";
 
 					ss = testSS;
 					HandleUnfocus(currentFocusedCell);
@@ -154,6 +155,44 @@ namespace GUI {
 				}
 			}
 			
+		}
+
+		protected async void FileMenuShowHelpBox(object sender, EventArgs e) {
+			string action = await DisplayActionSheet("Help Menu", "Cancel", null,
+				"Editing the Spreadsheet", 
+				"Loading Existing Sheets", 
+				"Saving My Sheet", 
+				"Value Not Showing on top?"
+			);
+			switch (action) {
+				case "Editing the Spreadsheet":
+					await DisplayAlert("Editing the Spreadsheet", 
+						"You can click any cell and start typing either directly into it, or in the box that holds " +
+						"the content up top.", 
+						"OK");
+					break;
+				case "Loading Existing Sheets":
+					await DisplayAlert("Loading Existing Sheets", 
+						"Go to the file menu and click Load.  You will then find your previously saved Spreadsheet.  " +
+						"The default save location is your Desktop.",
+						"OK");
+					break;
+				case "Saving My Sheet":
+					await DisplayAlert("Saving My Sheet",
+						"To save your spreadsheet, go to the file menu and click Save.  If you haven't saved that spreadsheet " +
+						"before, it will ask you what you want to name it.  If you already were editing an existing sheet, it will " +
+						"save it to the right place for you automatically.",
+						"OK");
+					break;
+				case "Value Not Showing on top?":
+					await DisplayAlert("Value Not Showing on top?",
+						"Due to a bug in Maui, the text boxes up top do not always display all the text inside of them, and cut off " +
+						"the value and content early.  No known fix exists.",
+						"OK");
+					break;
+				default:
+					break;
+			}
 		}
 
 		protected void CreateGrid() {

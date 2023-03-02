@@ -12,6 +12,7 @@
 			<MenuFlyoutItem Text="New" Clicked="FileMenuNew" />
 			<MenuFlyoutItem Text="Save" Clicked="FileMenuSave" />
 			<MenuFlyoutItem Text="Open" Clicked="FileMenuOpenAsync" />
+			<MenuFlyoutItem Text="Help" Clicked="FileMenuShowHelpBox" />
 		</MenuBarItem>
 	</ContentPage.MenuBarItems>
 
@@ -38,7 +39,6 @@
 						<Border StrokeThickness="1">
 							<Entry x:Name="SelectedCellContent" Text="null" WidthRequest="225" MinimumWidthRequest="225"/>
 						</Border>
-						
 						
 					</HorizontalStackLayout>
 				</Border>
