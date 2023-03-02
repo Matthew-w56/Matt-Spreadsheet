@@ -34,8 +34,7 @@ namespace GUI {
 	public partial class MainPage: ContentPage {
 
 		//Constants that control the grid
-		//ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		private readonly char[] TOP_LABELS = "ABC".ToCharArray();
+		private readonly char[] TOP_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 		private readonly int ROW_COUNT = 60;
 		private readonly int GRID_CELL_WIDTH = 90;
 		private readonly int GRID_CELL_HEIGHT = 30;
@@ -47,7 +46,7 @@ namespace GUI {
 		private readonly Color TOP_LABEL_COLOR = Color.FromRgb(200, 200, 202);
 		private readonly Color HIGHLIGHT_COLOR = Color.FromRgb(255, 255, 150);
 		private readonly Color CELL_BG_COLOR = Color.FromRgb(255, 255, 255);
-
+		
 		//Other program constants
 		private readonly static string CURRENT_VERSION = "six";
 		protected static readonly int DECIMAL_COUNT = 2;
