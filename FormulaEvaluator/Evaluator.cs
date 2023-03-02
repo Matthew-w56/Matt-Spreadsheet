@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-/// <summary>
+﻿/// <summary>
 /// Author: Matthew Williams
 /// Date: 12-Jan-2023
 /// Course: 3500 - Software Practice - University of Utah
@@ -11,6 +9,8 @@
 /// This Library provides the Evaluator that takes in a string representation of a formula
 /// and returns the answer to that formula.
 /// </summary>
+
+using System.Text.RegularExpressions;
 
 namespace FormulaEvaluator
 {

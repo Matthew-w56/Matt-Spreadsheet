@@ -13,29 +13,21 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 # Overview of the Spreadsheet Functionality
 
 	1. Current Functionality
-		Currently, the Solution has a Library that takes care of evaluating the formula
-		typed in by the user.  It also has a class that will track the dependencies in the
-		cells, and will allow things to get evaluated in the right order.
-		These are utilized by a Spreadsheet class that tracks dependencies, utilizes formulas,
-		and keeps track of what cells have something in them.  This Spreadsheet class can be
-		saved to a file, and then loaded again later.
+		This project includes a GUI that allows the user to create and edit Spreadsheets.  The
+		libraries in this Solution include classes that include objects like Formulas, Dependency
+		Graphs, and the Spreadsheet itself.  The user can save the sheets to files and reload them,
+		and is assisted by an in-program help menu that explains basic content.
 
 	2. Future Functionality
-		Eventually, the Spreadsheet will be given a GUI and will be interact-able with a user that way.
+		I'm uncertain if the next assignment continues to build on this.  Maybe nothing, maybe
+		something.
 
-# Examples of Good Software Practice
+# Time Estimate Growth
 
-	Example 1: Tests
-	I created more tests than I usually do before starting to code.  This helped me have a guideline as
-	I coded and showed me what is next.
-
-	Example 2: Separation of concerns
-	As I refactored my A4 code, I make sure that methods that could be simplified were, and I broke on method
-	specifically, the Spreadsheet.StoreCellContents method (helper method) into parts for which data type it was.
-
-	Example 3: Regression Testing
-	After I finished the draft of my code, I went through and ran all my previous tests and made sure that they
-	were working so I know I had a solid foundation to go off of.
+	I have gotten better at estimating my time for these assignments.  Part of this is learning how much will be
+	expected of us for each week, and what kinds of things I will be doing for it.  Another part, the larger part,
+	is that I am getting better at understanding what different tasks takes and how much I can expect to be testing
+	and debugging that project.
 
 # Time Expenditures:
 	(Future assignments' predicted time TBD)
@@ -49,4 +41,4 @@ Copyright:	CS 3500 and Matthew Williams - This work may not be copied for use in
 	Assignment				Predicted	Coding		Debugging	Testing		Documenting	Total		Notes
 	4 - Spreadsheet Class	5			0:45		0:03		1:18		0:35		2:41
 	5 - Spreadsheet Saving	7			1:40		1:45		0:31		0:25		4:21
-	6 - MAUI GUI			9			4:17		0:23		0:00		0:00					Spend 1:15 making it look nice
+	6 - MAUI GUI			9			6:20		1:43		0:40		1:25		10:08		1:15 - making it look nice.    1:50 - Added feature

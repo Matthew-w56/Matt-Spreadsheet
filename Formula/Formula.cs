@@ -51,8 +51,14 @@ namespace SpreadsheetUtilities {
 	/// </summary>
 	public class Formula {
 
-		private List<string> tokens;
-		private HashSet<string> uniqueVars = new();
+		protected List<string> tokens;
+		protected HashSet<string> uniqueVars = new();
+
+		/// <summary>
+		/// Creates an empty Formula Object.  Not helpful for use, but implemented
+		/// to allow an EnhancedFormula to do it's thing.  See EnhancedFormula.cs.
+		/// </summary>
+		public Formula() { this.tokens = new(); }
 
 		/// <summary>
 		/// Creates a Formula from a string that consists of an infix expression written as
@@ -107,7 +113,7 @@ namespace SpreadsheetUtilities {
 		/// This method assumes that this.tokens is already set and regularized
 		/// </summary>
 		/// <returns>Boolean.  Whether this expression is valid</returns>
-		private void VerifySyntax(Func<string, bool> isValid) {
+		protected virtual void VerifySyntax(Func<string, bool> isValid) {
 			//Section 1) Verify that tokens is not empty, and that first and last item follow rules
 
 			//Check that the tokens array has items in it.
@@ -211,7 +217,7 @@ namespace SpreadsheetUtilities {
 		///
 		/// This method should never throw an exception.
 		/// </summary>
-		public object Evaluate(Func<string, double> lookup) {
+		public virtual object Evaluate(Func<string, double> lookup) {
 
 			Stack<double> valStack = new();
 			Stack<string> opStack = new();
@@ -413,7 +419,7 @@ namespace SpreadsheetUtilities {
 		/// followed by zero or more letters, digits, or underscores; a double literal; and anything that doesn't
 		/// match one of those patterns.  There are no empty tokens, and no token contains white space.
 		/// </summary>
-		private static IEnumerable<string> GetTokens(String formula) {
+		protected static IEnumerable<string> GetTokens(String formula) {
 			// Patterns for individual tokens
 			String lpPattern = @"\(";
 			String rpPattern = @"\)";
@@ -441,7 +447,7 @@ namespace SpreadsheetUtilities {
 		/// </summary>
 		/// <param name="s">Value to be checked for if it's a number</param>
 		/// <returns>Boolean.  If the given value was a number</returns>
-		private static bool IsNumber(string s) { return Double.TryParse(s, out _); }
+		protected static bool IsNumber(string s) { return Double.TryParse(s, out _); }
 
 		/// <summary>
 		/// This returns whether or not the given string is whether +, -, *, or /.
@@ -454,14 +460,14 @@ namespace SpreadsheetUtilities {
 		/// </summary>
 		/// <param name="s">The string to be checked</param>
 		/// <returns>Boolean.  Whether or not the string is representing an operator</returns>
-		private static bool IsOperator(string s) { return "+ - * /".Contains(s); }
+		protected static bool IsOperator(string s) { return "+ - * /".Contains(s); }
 
 		/// <summary>
 		/// Returns whether the variable is valid by first making sure that it
 		/// starts with either a letter or an underscore (_), and then making
 		/// sure that it matches with the given isValid method from the user
 		/// </summary>
-		private static bool IsValidVar(string s, Func<string, bool> isValid) {
+		protected static bool IsValidVar(string s, Func<string, bool> isValid) {
 			if (!Regex.Match(s.Substring(0, 1), "[a-zA-Z]|_").Success) return false;
 			return isValid(s);
 		}
@@ -475,7 +481,7 @@ namespace SpreadsheetUtilities {
 		/// <param name="val2">The second value in the operation</param>
 		/// <returns>The result of the operation</returns>
 		/// <exception cref="ArgumentException">Divide by Zero, and Invalid Operator</exception>
-		private static double ApplyOperation(double val1, string op, double val2) {
+		protected static double ApplyOperation(double val1, string op, double val2) {
 			//Check that there is no Divide by Zero problem
 			if (op == "/" && val2 == 0) throw new ArgumentException("Cannot Divide by Zero!");
 
