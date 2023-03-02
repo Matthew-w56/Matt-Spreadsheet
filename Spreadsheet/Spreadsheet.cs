@@ -43,6 +43,7 @@ namespace SS {
 		//A dictionary of all cells that are not empty
 		private Dictionary<string, Cell> cells;
 
+
 		/// <summary>
 		/// Tracks whether or not this Spreadsheet has been changed at all since either
 		/// being created, loading in from a file, or saving.
@@ -118,7 +119,7 @@ namespace SS {
 
 			} else if (content.StartsWith("=")) {
 				//This throws any needed FormulaFormatExceptions
-				Formula f1 = new Formula(content[1..], Normalize, IsValid);
+				Formula f1 = new EnhancedFormula(content[1..], Normalize, IsValid);
 
 				string oldContent = "";
 				//Make a backup of the current cell's contents so that we can revert in case of a circular dependency
@@ -173,12 +174,12 @@ namespace SS {
 
 			if (!cells.ContainsKey(name)) { cells.Add(name, new Cell()); }
 
-			if (contents is Formula) {
+			if (contents is EnhancedFormula) {
 				cells[name].setContents(contents);
-				dg.ReplaceDependees(name, ((Formula) contents).GetVariables());
+				dg.ReplaceDependees(name, ((EnhancedFormula) contents).GetVariables());
 
 			} else {
-				if (cells[name].getContents() is Formula) { dg.ReplaceDependees(name, new List<string>()); }
+				if (cells[name].getContents() is EnhancedFormula) { dg.ReplaceDependees(name, new List<string>()); }
 
 				if (contents is string && contents.Equals("")) {
 					cells.Remove(name);
@@ -229,7 +230,7 @@ namespace SS {
 						writer.WriteElementString("name", cellName);
 						object contents = cells[cellName].getContents();
 						string contentString = contents.ToString() + "";
-						if (contents is Formula) { contentString = "=" + contentString; }
+						if (contents is EnhancedFormula) { contentString = "=" + contentString; }
 						writer.WriteElementString("contents", contentString);
 						writer.WriteEndElement();
 					}
@@ -240,9 +241,9 @@ namespace SS {
 				}
 			}
 			catch (DirectoryNotFoundException) { throw new SpreadsheetReadWriteException("Cannot find that directory!"); }
-			catch (Exception e) { throw new SpreadsheetReadWriteException("Can't save that file!"); }
+			catch (Exception) { throw new SpreadsheetReadWriteException("Can't save that file!"); }
 
-			Changed = false;//TODO: Might not need this
+			Changed = false;
 		}
 
 		/// <summary>
@@ -325,10 +326,11 @@ namespace SS {
 		/// <returns>The value of that cell</returns>
 		/// <exception cref="ArgumentException">Cell is empty, or contains a string</exception>
 		protected double lookupDelegate(string name) {
-			if (Double.TryParse(GetCellValue(name).ToString(), out double outVal)) {
+			object cellVal = GetCellValue(name);
+			if (Double.TryParse(cellVal.ToString(), out double outVal)) {
 				return outVal;
 			}
-			throw new ArgumentException();
+			throw new ArgumentException(cellVal.ToString());
 		}
 
 	}
@@ -375,7 +377,6 @@ namespace SS {
 			if (!value.Equals("")) return value;
 			else {
 				updateValue(lookupDelegate);
-				//TODO: The doc comment on this method
 				return value;
 			}
 		}
@@ -386,7 +387,7 @@ namespace SS {
 		/// </summary>
 		/// <param name="lookupDelegate">Lookup delegate to pass to any possible Formula content</param>
 		public void updateValue(Func<string, double> lookupDelegate) {
-			if (content is Formula formula) {
+			if (content is EnhancedFormula formula) {
 				value = formula.Evaluate(lookupDelegate);
 			} else if (Double.TryParse(content.ToString(), out double numVal)) {
 				value = numVal;
